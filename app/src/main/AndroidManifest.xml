@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.jacaranda">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Jacaranda"
+        tools:targetApi="31">
+        <activity
+            android:name=".DebitCard"
+            android:exported="false" />
+        <activity
+            android:name=".SelectAccount"
+            android:exported="false" />
+        <activity
+            android:name=".HintPage.ResetSuccessfully"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ResetPassword"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Verification2"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ForgotPassword"
+            android:exported="false" />
+        <activity
+            android:name=".HintPage.ChangePasswordSuccessfully"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ChangePassword"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.AccountSecurity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.EnterUserName"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.AccountInformation"
+            android:exported="false" />
+        <activity
+            android:name=".HintPage.SignUpSuccessfullyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.VerificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.SignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HintPage.PasswordChangedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.AdvertisingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.SignInActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".HintPage.SucessfullyTransferActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.TransferActivity2"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.TransferActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.PayActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.NotificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+    </application>
+
+</manifest>

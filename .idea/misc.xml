@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable-mdpi/rounded_rectangle_code_right.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/base_eye.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/bg.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/bottom_navigation_activity.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/bottom_navigation_home.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/bottom_navigation_profile.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/bottom_navigation_textcolor.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/circle_background.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/eye_shape.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/hint_question.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/pay_background.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/rounded_rectangel_code_normal.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/rounded_rectangle.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/rounded_rectangle_code_false.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/rounded_rectangle_code_normal.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/rounded_rectangle_gray.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/rounded_rectangle_half.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/rounded_rectangle_id.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/rounded_rectangle_item.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/rounded_rectangle_pay.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/rounded_rectangle_search_bar.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/rounded_rectangle_shadow.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/sign_in_eye.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/tab_indicator.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/drawable/tablayout_textstyle.xml" value="0.1695" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_account_information.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_account_security.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_advertising.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_change_password.xml" value="0.4" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_change_password_successfully.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_debit_card.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_enter_user_name.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_forgot_password.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_forgot_password2.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_forgot_password_verification.xml" value="0.1" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_notification.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_password_changed.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_pay.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_reset_password.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_reset_successfully.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_select_account.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_sign_in.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_sign_up.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_sign_up_successfully.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_sign_upt_successfully.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_sucessfully_transfer.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_transfer.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_transfer2.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_verification.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/activity_veritification2.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/all_activities.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/all_activities_listview.xml" value="0.536" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/bottom_navigation.xml" value="0.2526041666666667" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/fragment_activity.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/fragment_home.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/fragment_profile.xml" value="0.2390625" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_activities_part.xml" value="0.4" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_activities_part_case1.xml" value="0.4" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_activitiy_part_case1.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_activity_part_case2.xml" value="0.32339955849889623" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_activity_part_case3.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_activity_part_listview.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_balance_part.xml" value="0.4" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_business_part.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_business_part_listview.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_event_part.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_fragment_beauty.xml" value="0.2390625" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_fragment_restaurant.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_fragment_tourism.xml" value="0.2390625" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/home_pay_transfer_part.xml" value="0.2526041666666667" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/keyboard.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/pay_popupwindow.xml" value="0.264" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/profile_about_part.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/profile_account_part.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/profile_message_part.xml" value="0.2526041666666667" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/profile_security_part.xml" value="0.20811965811965813" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/layout/transfer_popupwindow.xml" value="0.25364583333333335" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/xml/keys.xml" value="0.2526041666666667" />
+        <entry key="..\:/Android/Jacaranda/app/src/main/res/xml/mykeyboard.xml" value="0.25364583333333335" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
