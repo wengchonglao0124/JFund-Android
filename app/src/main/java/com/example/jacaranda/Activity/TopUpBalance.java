@@ -256,7 +256,6 @@ public class TopUpBalance extends AppCompatActivity {
 
 
                             if (code.equals("200")){
-                                showToast("Login succeeded!");
                                 try {
                                     JSONObject json_data = new JSONObject(data);
                                     Log.i(TAG, json_data.toString());
