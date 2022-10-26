@@ -10,7 +10,6 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,7 @@ import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.jacaranda.HintPage.SucessfullyTransferActivity;
+import com.example.jacaranda.HintPage.SuccessfullyTransferActivity;
 import com.example.jacaranda.MyView.MyInputFilter;
 import com.example.jacaranda.R;
 
@@ -79,10 +78,10 @@ public class TransferActivity2 extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(s.toString().equals("0.00")){
                     Continue.setBackgroundResource(R.drawable.continue_button);
-                    Continue.setClickable(false);
+                    Continue.setEnabled(false);
                 }else{
                     Continue.setBackgroundResource(R.drawable.continue_button1);
-                    Continue.setClickable(true);
+                    Continue.setEnabled(true);
                 }
                 int lenght = s.length();
                 double number = 0.00;
@@ -152,7 +151,7 @@ public class TransferActivity2 extends AppCompatActivity {
     ProgressBar progressBar;
     private void clickNext() {
         Continue = (Button) findViewById(R.id.id_btn_continue);
-        Continue.setClickable(false);
+        Continue.setEnabled(false);
         Continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -184,7 +183,7 @@ public class TransferActivity2 extends AppCompatActivity {
                         if(popupWindow!=null){
                             popupWindow.dismiss();
                             progressBar.setVisibility(View.VISIBLE);
-                            Intent intent = new Intent(TransferActivity2.this, SucessfullyTransferActivity.class);
+                            Intent intent = new Intent(TransferActivity2.this, SuccessfullyTransferActivity.class);
 
                             Timer timer = new Timer();
                             TimerTask timerTask = new TimerTask() {
@@ -220,12 +219,4 @@ public class TransferActivity2 extends AppCompatActivity {
         this.getWindow().setAttributes(layoutParams);
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_DOT){
-            text.setText("0.03");
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 }

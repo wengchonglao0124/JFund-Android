@@ -101,6 +101,8 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
                 return R.drawable.payoneer;
             case "uber":
                 return R.drawable.uber;
+            case "apple":
+                return R.drawable.apple;
             default:
                 return R.drawable.rounded_rectangle;
         }

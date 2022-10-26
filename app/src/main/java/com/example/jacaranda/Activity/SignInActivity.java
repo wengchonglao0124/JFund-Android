@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Selection;
 import android.text.Spannable;
+import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
@@ -36,14 +38,39 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     Button signIn;
+    EditText email;
     private void initSignIn() {
         signIn = (Button) findViewById(R.id.id_btn_signIn);
+        email = (EditText) findViewById(R.id.id_et_Email);
+        signIn.setEnabled(false);
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SignInActivity.this, SelectAccount.class);
                 startActivity(intent);
                 finish();
+            }
+        });
+        email.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length()!=0 && password.getText().toString().length()!=0 ){
+                    signIn.setBackgroundResource(R.drawable.sign_in_button1);
+                    signIn.setEnabled(true);
+                }else{
+                    signIn.setBackgroundResource(R.drawable.sign_in_button2);
+                    signIn.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }
@@ -77,6 +104,28 @@ public class SignInActivity extends AppCompatActivity {
                     Spannable spanText = (Spannable) charSequence;
                     Selection.setSelection(spanText, charSequence.length());
                 }
+            }
+        });
+        password.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length()!=0 && email.getText().toString().length()!=0 ){
+                    signIn.setBackgroundResource(R.drawable.sign_in_button1);
+                    signIn.setEnabled(true);
+                }else{
+                    signIn.setBackgroundResource(R.drawable.sign_in_button2);
+                    signIn.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }

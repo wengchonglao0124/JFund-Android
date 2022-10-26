@@ -1,5 +1,6 @@
 package com.example.jacaranda.Fragment;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -11,9 +12,11 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.example.jacaranda.Activity.ActivitiesDetail;
 import com.example.jacaranda.Adapter.ActivitiesAdapter;
 import com.example.jacaranda.Modle.RecentActivity;
 import com.example.jacaranda.MyView.NoScrollListView;
@@ -78,6 +81,16 @@ public class ActivityFragment extends Fragment {
         adapter = new ActivitiesAdapter(this.getActivity(),
                 R.layout.home_activity_part_listview, R.layout.all_activities_listview, activityList);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
+                intent.putExtra("image", activityList.get(position).getImageName());
+                intent.putExtra("name", activityList.get(position).getName());
+                intent.putExtra("amount", activityList.get(position).getBalance());
+                startActivity(intent);
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -109,6 +122,16 @@ public class ActivityFragment extends Fragment {
                     ActivitiesAdapter adapterNew = new ActivitiesAdapter(getActivity(),
                             R.layout.home_activity_part_listview, R.layout.all_activities_listview, activityBackup);
                     listView.setAdapter(adapterNew);
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
+                            intent.putExtra("image", activityList.get(position).getImageName());
+                            intent.putExtra("name", activityList.get(position).getName());
+                            intent.putExtra("amount", activityList.get(position).getBalance());
+                            startActivity(intent);
+                        }
+                    });
                 }else{
                     activitySearched.clear();
                     for(RecentActivity activity: activityBackup){
@@ -119,6 +142,16 @@ public class ActivityFragment extends Fragment {
                     ActivitiesAdapter adapterNew = new ActivitiesAdapter(getActivity(),
                             R.layout.home_activity_part_listview, R.layout.all_activities_listview, activitySearched);
                     listView.setAdapter(adapterNew);
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
+                            intent.putExtra("image", activitySearched.get(position).getImageName());
+                            intent.putExtra("name", activitySearched.get(position).getName());
+                            intent.putExtra("amount", activitySearched.get(position).getBalance());
+                            startActivity(intent);
+                        }
+                    });
                 }
             }
             @Override

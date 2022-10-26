@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.jacaranda">
+    package="com.example.jacaranda" >
 
     <application
         android:allowBackup="true"
@@ -12,7 +12,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Jacaranda"
-        tools:targetApi="31">
+        tools:targetApi="31" >
+        <activity
+            android:name=".HintPage.SuccessfullyPay"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ActivitiesDetail"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.RestaurantDetail"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.TopUpBalance"
+            android:exported="false" />
         <activity
             android:name=".DebitCard"
             android:exported="false" />
@@ -67,7 +79,7 @@
         <activity
             android:name=".Activity.SignInActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -75,7 +87,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HintPage.SucessfullyTransferActivity"
+            android:name=".HintPage.SuccessfullyTransferActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.TransferActivity2"

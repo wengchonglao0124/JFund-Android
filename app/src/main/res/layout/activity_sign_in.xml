@@ -126,7 +126,7 @@
         android:layout_width="321dp"
         android:layout_height="44dp"
         android:layout_marginTop="348dp"
-        android:text="Sign in"
+        android:background="@drawable/sign_in_button2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -12,10 +12,14 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.example.jacaranda.Activity.ActivitiesDetail;
+import com.example.jacaranda.Activity.RestaurantDetail;
+import com.example.jacaranda.Activity.TopUpBalance;
 import com.example.jacaranda.Adapter.RecentActivityAdapter;
 import com.example.jacaranda.Adapter.FragmentPagerAdapter;
 import com.example.jacaranda.Modle.RecentActivity;
@@ -87,6 +91,17 @@ public class HomeFragment extends Fragment {
             RecentActivityAdapter adapter = new RecentActivityAdapter(this.getActivity(),
                     R.layout.home_activity_part_listview, activityList);
             listView.setAdapter(adapter);
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
+                    intent.putExtra("image", activityList.get(position).getImageName());
+                    intent.putExtra("name", activityList.get(position).getName());
+                    intent.putExtra("amount", activityList.get(position).getBalance());
+                    startActivity(intent);
+                }
+            });
         }else if(activityList.size() > 3){
             List<RecentActivity> currentList = new ArrayList<>();
             currentList.add(activityList.get(0));
@@ -98,6 +113,17 @@ public class HomeFragment extends Fragment {
             RecentActivityAdapter adapter = new RecentActivityAdapter(this.getActivity(),
                     R.layout.home_activity_part_listview, currentList);
             listView.setAdapter(adapter);
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
+                    intent.putExtra("image", activityList.get(position).getImageName());
+                    intent.putExtra("name", activityList.get(position).getName());
+                    intent.putExtra("amount", activityList.get(position).getBalance());
+                    startActivity(intent);
+                }
+            });
         }
     }
 
@@ -179,11 +205,12 @@ public class HomeFragment extends Fragment {
 
     private Button addBalance;
     public void addBalance(){
-        addBalance = RootView.findViewById(R.id.id_btn_add);
+        addBalance = RootView.findViewById(R.id.id_btn_top_up_balance);
         addBalance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent i = new Intent(getActivity(), TopUpBalance.class);
+                startActivity(i);
             }
         });
     }

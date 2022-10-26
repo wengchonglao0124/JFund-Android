@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Selection;
 import android.text.Spannable;
+import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -60,6 +62,30 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             }
         });
+
+        password.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length()!=0 && email.getText().toString().length()!=0
+                        && name.getText().toString().length()!=0 && password2.getText().toString().length()!=0){
+                    signUp.setBackgroundResource(R.drawable.sign_up_button1);
+                    signUp.setEnabled(true);
+                }else{
+                    signUp.setBackgroundResource(R.drawable.sign_up_button2);
+                    signUp.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     Button eye2;
@@ -88,6 +114,30 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             }
         });
+
+        password2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length()!=0 && email.getText().toString().length()!=0
+                        && password.getText().toString().length()!=0 && name.getText().toString().length()!=0){
+                    signUp.setBackgroundResource(R.drawable.sign_up_button1);
+                    signUp.setEnabled(true);
+                }else{
+                    signUp.setBackgroundResource(R.drawable.sign_up_button2);
+                    signUp.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     TextView signIn;
@@ -102,13 +152,65 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     Button signUp;
+    EditText name, email;
     private void initSignUp() {
         signUp = (Button) findViewById(R.id.id_btn_signUp);
+        name = (EditText) findViewById(R.id.id_et_signUp_name);
+        email = (EditText) findViewById(R.id.id_et_signUp_email);
+        signUp.setEnabled(false);
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SignUpActivity.this, VerificationActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length()!=0 && email.getText().toString().length()!=0
+                        && password.getText().toString().length()!=0 && password2.getText().toString().length()!=0){
+                    signUp.setBackgroundResource(R.drawable.sign_up_button1);
+                    signUp.setEnabled(true);
+                }else{
+                    signUp.setBackgroundResource(R.drawable.sign_up_button2);
+                    signUp.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        email.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length()!=0 && name.getText().toString().length()!=0
+                        && password.getText().toString().length()!=0 && password2.getText().toString().length()!=0){
+                    signUp.setBackgroundResource(R.drawable.sign_up_button1);
+                    signUp.setEnabled(true);
+                }else{
+                    signUp.setBackgroundResource(R.drawable.sign_up_button2);
+                    signUp.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }

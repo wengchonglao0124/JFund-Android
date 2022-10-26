@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f6f6f6"
+    tools:context=".Activity.RestaurantDetail">
+
+    <Button
+        android:id="@+id/id_btn_restaurantDetail_back"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/chevron_back1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/view23"
+        android:layout_width="320dp"
+        android:layout_height="218dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="61dp"
+        android:layout_marginEnd="27dp"
+        android:background="@drawable/picture_restaurant"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/view24"
+        android:layout_width="320dp"
+        android:layout_height="133dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="303dp"
+        android:layout_marginEnd="27dp"
+        android:background="@drawable/rounded_rectangle_id"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/id_tv_restaurantDetail_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="18dp"
+        android:fontFamily="@font/dm_sans"
+        android:lineSpacingExtra="5.6sp"
+        android:text="Restaurant name"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/view24"
+        app:layout_constraintTop_toTopOf="@+id/view24" />
+
+    <TextView
+        android:layout_width="152dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="53dp"
+        android:fontFamily="@font/dm_sans"
+        android:lineSpacingExtra="4.8sp"
+        android:text="+61 123 456 789"
+        android:textColor="#1e1e1e"
+        android:textSize="12sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="@+id/view24"
+        app:layout_constraintTop_toTopOf="@+id/view24" />
+
+    <TextView
+        android:id="@+id/id_tv_restaurantDetail_address"
+        android:layout_width="282dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="85dp"
+        android:fontFamily="@font/dm_sans"
+        android:lineSpacingExtra="4.8sp"
+        android:textColor="#898a8d"
+        android:textSize="12sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="@+id/view24"
+        app:layout_constraintTop_toTopOf="@+id/view24"
+        android:text="Address line, Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+
+    <View
+        android:id="@+id/view25"
+        android:layout_width="320dp"
+        android:layout_height="204dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="460dp"
+        android:layout_marginEnd="27dp"
+        android:background="@drawable/rounded_rectangle_id"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="18dp"
+        android:fontFamily="@font/dm_sans"
+        android:lineSpacingExtra="5.6sp"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/view25"
+        app:layout_constraintTop_toTopOf="@+id/view25"
+        android:text="Location" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
