@@ -1,26 +1,74 @@
 package com.example.jacaranda.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.example.jacaranda.JacarandaApplication;
+import com.example.jacaranda.MainActivity;
 import com.example.jacaranda.MyView.MyInputFilter;
 import com.example.jacaranda.R;
+import com.stripe.android.PaymentConfiguration;
+import com.stripe.android.paymentsheet.PaymentSheet;
+import com.stripe.android.paymentsheet.PaymentSheetResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class TopUpBalance extends AppCompatActivity {
+
+    private JacarandaApplication app;
+
+    private static final String TAG = "TopUpActivity";
+
+    private static final String PATH = "/create-payment-intent";
+
+
+    private String paymentIntentClientSecret;
+    private PaymentSheet paymentSheet;
+    private PaymentSheet.CustomerConfiguration customerConfiguration;
+
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top_up_balance);
+
+        app = (JacarandaApplication) getApplication();
+
+        preferences = getSharedPreferences("config", Context.MODE_PRIVATE);
+
+        paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
+
         initAll();
     }
 
@@ -131,7 +179,150 @@ public class TopUpBalance extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fetchPaymentIntent();
             }
         });
+    }
+
+
+    private void showAlert(String title, @Nullable String message) {
+        runOnUiThread(() -> {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Ok", null)
+                    .create();
+            dialog.show();
+        });
+    }
+
+    private void showToast(String message) {
+        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_LONG).show());
+    }
+
+    private void fetchPaymentIntent() {
+        JSONObject json_amount = new JSONObject();
+
+        try {
+
+            json_amount.put("amounts", Double.parseDouble(text.getText().toString()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        final RequestBody requestBody = RequestBody.create(
+                json_amount.toString(),
+                MediaType.get("application/json; charset=utf-8")
+
+        );
+
+        Log.i(TAG, requestBody.toString());
+
+        Request request = new Request.Builder()
+                .url(app.getURL() + PATH)
+                .post(requestBody)
+                .addHeader("token",preferences.getString("token", null))
+                .build();
+
+
+        new OkHttpClient()
+                .newCall(request)
+                .enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        showAlert("Failed to load data", "Error: " + e.toString());
+                    }
+
+                    @Override
+                    public void onResponse(
+                            @NonNull Call call,
+                            @NonNull Response response
+                    ) throws IOException {
+                        if (!response.isSuccessful()) {
+                            showAlert(
+                                    "Failed to load page",
+                                    "Error: " + response.toString()
+                            );
+                        } else {
+                            final JSONObject responseJson = parseResponse(response.body());
+                            Log.i(TAG, responseJson.toString());
+
+                            String code, message, data;
+                            code = responseJson.optString("code");
+                            message = responseJson.optString("msg");
+                            data = responseJson.optString("data");
+                            data = data.replace("\\\"", "'");
+
+
+                            if (code.equals("200")){
+                                showToast("Login succeeded!");
+                                try {
+                                    JSONObject json_data = new JSONObject(data);
+                                    Log.i(TAG, json_data.toString());
+                                    paymentIntentClientSecret = json_data.optString("paymentIntent");
+//                            runOnUiThread(() -> payButton.setEnabled(true));
+                                    Log.i(TAG, "Retrieved PaymentIntent");
+                                    Log.i(TAG, paymentIntentClientSecret.toString());
+
+                                    customerConfiguration = new PaymentSheet.CustomerConfiguration(
+                                            json_data.optString("customer"),
+                                            json_data.optString("ephemeralKey")
+                                    );
+
+                                    PaymentConfiguration.init(getApplicationContext(), json_data.optString("publishableKey"));
+
+                                    createPaymentSheet();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }else{
+                                showToast(message);
+                            }
+
+
+                        }
+                    }
+                });
+    }
+
+    private JSONObject parseResponse(ResponseBody responseBody) {
+        if (responseBody != null) {
+            try {
+                return new JSONObject(responseBody.string());
+            } catch (IOException | JSONException e) {
+                Log.e(TAG, "Error parsing response", e);
+            }
+        }
+
+        return new JSONObject();
+    }
+
+
+    private void createPaymentSheet(){
+        PaymentSheet.Configuration configuration = new PaymentSheet.Configuration.Builder("Jacaranda, Inc.")
+                .customer(customerConfiguration)
+                .allowsDelayedPaymentMethods(true)
+                .build();
+
+        // Present Payment Sheet
+        paymentSheet.presentWithPaymentIntent(paymentIntentClientSecret, configuration);
+    }
+
+    private void onPaymentSheetResult(
+            final PaymentSheetResult paymentSheetResult
+    ) {
+        if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
+            showToast("Payment complete!");
+            Intent intent = new Intent();
+            intent.setClass(TopUpBalance.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
+            Log.i(TAG, "Payment canceled!");
+        } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
+            Throwable error = ((PaymentSheetResult.Failed) paymentSheetResult).getError();
+            showAlert("Payment failed", error.getLocalizedMessage());
+        }
     }
 }
