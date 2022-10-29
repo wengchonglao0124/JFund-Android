@@ -1,7 +1,9 @@
 package com.example.jacaranda.Fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -10,10 +12,12 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.jacaranda.Activity.AccountInformation;
 import com.example.jacaranda.Activity.AccountSecurity;
+import com.example.jacaranda.Activity.SignInActivity;
 import com.example.jacaranda.Activity.VerificationActivity;
 import com.example.jacaranda.HintPage.SignUpSuccessfullyActivity;
 import com.example.jacaranda.R;
@@ -24,6 +28,8 @@ public class ProfileFragment extends Fragment {
     private static final int RESULT_CANCELED = 0;
     TextView name,capital;
     String userName,first;
+
+    private SharedPreferences preferences;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -37,6 +43,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferences = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
     }
 
     View RootView;
@@ -54,6 +61,25 @@ public class ProfileFragment extends Fragment {
         initName();
         initAccountInformation();
         initAccountSecurity();
+        initLogout();
+    }
+
+    private void initLogout(){
+        Button btn_logout;
+        btn_logout = RootView.findViewById(R.id.id_btn_logout);
+        btn_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor  editor = preferences.edit();
+                editor.clear();
+                editor.commit();
+
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), SignInActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initName() {

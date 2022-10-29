@@ -64,7 +64,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void initAll() {
-        initAdvertising();
+//        initAdvertising();
         initClickEye();
         intiForgotPassword();
         initSignUp();
