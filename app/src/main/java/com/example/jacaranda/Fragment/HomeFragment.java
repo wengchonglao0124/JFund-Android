@@ -1,14 +1,20 @@
 package com.example.jacaranda.Fragment;
 
+import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +22,15 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jacaranda.Activity.ActivitiesDetail;
 import com.example.jacaranda.Activity.RestaurantDetail;
 import com.example.jacaranda.Activity.TopUpBalance;
 import com.example.jacaranda.Adapter.RecentActivityAdapter;
 import com.example.jacaranda.Adapter.FragmentPagerAdapter;
+import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.Modle.RecentActivity;
 import com.example.jacaranda.MyView.NoScrollListView;
 import com.example.jacaranda.Activity.NotificationActivity;
@@ -36,17 +45,36 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class HomeFragment extends Fragment {
     View RootView;
     List<RecentActivity> activityList = new ArrayList<>();
     private ViewPager2 ViewPager;
     private TabLayout tabLayout;
+
+    private final String TAG = "HomeFragment";
+    private static final String BACKEND_URL = "https://xp.lycyy.cc";
+    private JacarandaApplication app;
+    private SharedPreferences preferences;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -60,6 +88,25 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferences = requireActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+        app = (JacarandaApplication) getActivity().getApplication();
+
+
+        Thread thread1 = new Thread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void run() {
+                getBalance();
+            }
+        });
+
+        thread1.start();
+
+        try {
+            thread1.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -72,6 +119,8 @@ public class HomeFragment extends Fragment {
         initRecentActivity();
         initBusinessPartner();
         initClick();
+
+        updateUserID(preferences.getString("userID", "0000000000000000"));
         return RootView;
     }
 
@@ -238,4 +287,157 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+
+    private JSONObject parseResponse(ResponseBody responseBody) {
+        if (responseBody != null) {
+            try {
+                return new JSONObject(responseBody.string());
+            } catch (IOException | JSONException e) {
+                Log.e(TAG, "Error parsing response", e);
+            }
+        }
+
+        return new JSONObject();
+    }
+
+    private void getUserID(){
+        //setup RequestBody
+        final RequestBody requestBody = RequestBody.create(
+                "",
+                MediaType.get("application/json; charset=utf-8")
+        );
+
+        Request request = new Request.Builder()
+                .url(BACKEND_URL + "/getInfo")
+                .post(requestBody)
+                .addHeader("token", preferences.getString("token", null))
+                .build();
+
+
+        new OkHttpClient()
+                .newCall(request)
+                .enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(
+                            @NonNull Call call,
+                            @NonNull Response response
+                    ) throws IOException {
+                        if (!response.isSuccessful()) {
+
+                        } else {
+                            final JSONObject responseJson = parseResponse(response.body());
+                            Log.i(TAG, responseJson.toString());
+
+                            String code, message, data;
+                            code = responseJson.optString("code");
+                            message = responseJson.optString("msg");
+                            data = responseJson.optString("data");
+                            data = data.replace("\\\"", "'");
+
+                            Log.i(TAG, data);
+
+
+
+                            if (code.equals("200")){
+                                try {
+                                    String userID = new JSONObject(data).optString("UserID");
+                                    Log.i(TAG, userID);
+                                    updateUserID(userID.concat("0"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }else{
+                                Log.i(TAG, message);
+                            }
+
+                        }
+                    }
+                });
+    }
+
+    private void getBalance(){
+
+        //setup RequestBody
+        final RequestBody requestBody = RequestBody.create(
+                "",
+                MediaType.get("application/json; charset=utf-8")
+        );
+
+        Request request = new Request.Builder()
+                .url(BACKEND_URL + "/balanceOf")
+                .post(requestBody)
+                .addHeader("token", preferences.getString("token", null))
+                .build();
+
+
+        new OkHttpClient()
+                .newCall(request)
+                .enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    }
+
+                    @Override
+                    public void onResponse(
+                            @NonNull Call call,
+                            @NonNull Response response
+                    ) throws IOException {
+                        if (!response.isSuccessful()) {
+                        } else {
+                            final JSONObject responseJson = parseResponse(response.body());
+                            Log.i(TAG, responseJson.toString());
+
+                            String code, message, data;
+                            code = responseJson.optString("code");
+                            message = responseJson.optString("msg");
+                            data = responseJson.optString("data");
+                            data = data.replace("\\\"", "'");
+
+                            Log.i(TAG, data);
+
+
+
+                            if (code.equals("200")){
+                                try {
+                                    String balance = new JSONObject(data).optString("balanceof");
+                                    Log.i(TAG, balance);
+                                    updateBalance(balance);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }else{
+                                Log.i(TAG, message);
+                            }
+
+                        }
+                    }
+                });
+
+    }
+
+    private void updateUserID(String userID){
+        TextView userId = RootView.findViewById(R.id.id_balance_userid);
+        String userIDString = "";
+        char[] characters = userID.toCharArray();
+        for (int i=0; i<userID.length(); i++){
+            if ((i%4) == 0){
+                userIDString += " ";
+            }
+            userIDString += characters[i];
+        }
+        userId.setText(userIDString);
+    }
+
+    private void updateBalance(String balance){
+        TextView tx_balance = RootView.findViewById(R.id.id_balance_balance);
+        Log.i(TAG, balance);
+        tx_balance.setText(balance);
+    }
+
 }
