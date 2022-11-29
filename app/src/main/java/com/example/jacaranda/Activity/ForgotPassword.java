@@ -69,7 +69,7 @@ public class ForgotPassword extends AppCompatActivity {
 
     Button next;
     private void initNext() {
-        next = (Button) findViewById(R.id.id_btn_forgotPassword__next);
+        next = (Button) findViewById(R.id.id_btn_forgotPassword_next);
         next.setEnabled(false);
         next.setOnClickListener(new View.OnClickListener() {
             @Override

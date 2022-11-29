@@ -83,6 +83,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
+            android:id="@+id/id_pay_QR_code"
             android:layout_width="189.8dp"
             android:layout_height="189.8dp"
             android:layout_marginTop="132dp"

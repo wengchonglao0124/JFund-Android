@@ -6,16 +6,21 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.example.jacaranda.Activity.ActivitiesDetail;
+import com.example.jacaranda.Activity.RestaurantDetail;
+import com.example.jacaranda.Activity.TopUpBalance;
 import com.example.jacaranda.Adapter.RecentActivityAdapter;
 import com.example.jacaranda.Adapter.FragmentPagerAdapter;
 import com.example.jacaranda.Modle.RecentActivity;
@@ -64,11 +69,18 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         if(RootView == null){
             RootView = inflater.inflate(R.layout.fragment_home, container, false);
+            initEvent();
+            initRecentActivity();
+            initBusinessPartner();
+            initClick();
         }
-        initRecentActivity();
-        initBusinessPartner();
-        initClick();
         return RootView;
+    }
+
+    View event;
+    private void initEvent() {
+        event = RootView.findViewById(R.id.id_include_event);
+        event.setVisibility(View.GONE);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -87,6 +99,17 @@ public class HomeFragment extends Fragment {
             RecentActivityAdapter adapter = new RecentActivityAdapter(this.getActivity(),
                     R.layout.home_activity_part_listview, activityList);
             listView.setAdapter(adapter);
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
+                    intent.putExtra("image", activityList.get(position).getImageName());
+                    intent.putExtra("name", activityList.get(position).getName());
+                    intent.putExtra("amount", activityList.get(position).getBalance());
+                    startActivity(intent);
+                }
+            });
         }else if(activityList.size() > 3){
             List<RecentActivity> currentList = new ArrayList<>();
             currentList.add(activityList.get(0));
@@ -98,6 +121,18 @@ public class HomeFragment extends Fragment {
             RecentActivityAdapter adapter = new RecentActivityAdapter(this.getActivity(),
                     R.layout.home_activity_part_listview, currentList);
             listView.setAdapter(adapter);
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
+                    intent.putExtra("image", activityList.get(position).getImageName());
+                    intent.putExtra("name", activityList.get(position).getName());
+                    intent.putExtra("amount", activityList.get(position).getBalance());
+                    startActivity(intent);
+                }
+            });
         }
     }
 
@@ -117,18 +152,21 @@ public class HomeFragment extends Fragment {
 
     private void initBusinessPartner(){
         initViewPager();
-        initTabLayout();
+        // initTabLayout();
     }
 
+    FragmentPagerAdapter adapter;
     private void initViewPager() {
         ViewPager = RootView.findViewById(R.id.id_NestedViewPager);
         ArrayList<Fragment> fragments = new ArrayList<>();
         fragments.add(RestaurantFragment.newInstance());
-        fragments.add(BeautyFragment.newInstance());
-        fragments.add(TourismFragment.newInstance());
-        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getChildFragmentManager(),
+        // fragments.add(BeautyFragment.newInstance());
+        // fragments.add(TourismFragment.newInstance());
+        adapter = new FragmentPagerAdapter(getChildFragmentManager(),
                 getLifecycle(), fragments);
-        ViewPager.setAdapter(adapter);
+        if(ViewPager.getAdapter() == null) {
+            ViewPager.setAdapter(adapter);
+        }
     }
 
     private void initTabLayout() {
@@ -179,11 +217,12 @@ public class HomeFragment extends Fragment {
 
     private Button addBalance;
     public void addBalance(){
-        addBalance = RootView.findViewById(R.id.id_btn_add);
+        addBalance = RootView.findViewById(R.id.id_btn_top_up_balance);
         addBalance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent i = new Intent(getActivity(), TopUpBalance.class);
+                startActivity(i);
             }
         });
     }

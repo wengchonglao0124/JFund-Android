@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f6f6f6"
+    tools:context=".HintPage.SuccessfullyPay">
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
+        android:layout_marginTop="107dp"
+        android:background="@drawable/top_up_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/id_tv_tranferSuccessfully_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp"
+        android:fontFamily="@font/dm_sans"
+        android:lineSpacingExtra="6.4sp"
+        android:text="Successfully paid"
+        android:textColor="#898a8d"
+        android:textSize="16sp"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView5" />
+
+    <TextView
+        android:id="@+id/id_tv_tranferAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:fontFamily="@font/dm_sans"
+        android:gravity="center_horizontal"
+        android:lineSpacingExtra="12.8sp"
+        android:text="$ 90.00"
+        android:textColor="#1e1e20"
+        android:textSize="32sp"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/id_tv_tranferSuccessfully_hint" />
+
+    <Button
+        android:id="@+id/id_btn_SuccessfullyPay_done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:background="@drawable/done_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/id_tv_tranferAmount" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

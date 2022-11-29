@@ -96,11 +96,12 @@
             app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
         <Button
+            android:id="@+id/id_btn_logOut"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="34dp"
             android:layout_marginBottom="31dp"
-            android:background="#fcfcfc"
+            android:background="@drawable/rounded_rectangle_item"
             android:fontFamily="@font/dm_sans"
             android:lineSpacingExtra="5.6sp"
             android:text="Log out"

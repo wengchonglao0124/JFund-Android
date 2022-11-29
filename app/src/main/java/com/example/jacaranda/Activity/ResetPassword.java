@@ -175,10 +175,10 @@ public class ResetPassword extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if(step1&&step2){
-                    //save.setBackgroundResource(R.drawable.save_button1);
+                    change.setBackgroundResource(R.drawable.change_password);
                     change.setEnabled(true);
                 }else{
-                    //save.setBackgroundResource(R.drawable.save_button);
+                    change.setBackgroundResource(R.drawable.change_password1);
                     change.setEnabled(false);
                 }
             }

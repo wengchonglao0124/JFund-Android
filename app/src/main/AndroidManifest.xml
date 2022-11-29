@@ -14,6 +14,45 @@
         android:theme="@style/Theme.Jacaranda"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.HelpAndSupport"
+            android:exported="false" />
+        <activity
+            android:name=".HintPage.SuccessfullyTopUp"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ForgotPinVerification"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.PaymentSetting"
+            android:exported="false" />
+        <activity
+            android:name=".HintPage.PaymentPinChanged"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.EnterNewPin"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ConfirmNewPin"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ForgotPaymentPin"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ChangePaymentPin"
+            android:exported="false" />
+        <activity
+            android:name=".HintPage.SuccessfullyPay"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ActivitiesDetail"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.RestaurantDetail"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.TopUpBalance"
+            android:exported="false" />
+        <activity
             android:name=".DebitCard"
             android:exported="false" />
         <activity
@@ -75,7 +114,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HintPage.SucessfullyTransferActivity"
+            android:name=".HintPage.SuccessfullyTransferActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.TransferActivity2"

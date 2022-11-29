@@ -50,6 +50,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/id_cl_profile_paymentSetting"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -52,6 +52,7 @@
         app:layout_constraintTop_toTopOf="@+id/view9" />
 
     <EditText
+        android:id="@+id/id_et_signUp_name"
         android:layout_width="270dp"
         android:layout_height="20dp"
         android:layout_marginStart="11dp"
@@ -89,6 +90,7 @@
         app:layout_constraintTop_toTopOf="@+id/view10" />
 
     <EditText
+        android:id="@+id/id_et_signUp_email"
         android:layout_width="270dp"
         android:layout_height="20dp"
         android:layout_marginStart="11dp"
@@ -186,7 +188,7 @@
         android:layout_width="321dp"
         android:layout_height="44dp"
         android:layout_marginTop="414dp"
-        android:text="Sign up"
+        android:background="@drawable/sign_up_button2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

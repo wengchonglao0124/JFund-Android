@@ -23,6 +23,8 @@ public class AccountSecurity extends AppCompatActivity {
         initBack();
         initChangePassword();
         initForgotPassword();
+        initChangePaymentPin();
+        initForgotPaymentPin();
     }
 
     Button back;
@@ -55,6 +57,31 @@ public class AccountSecurity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AccountSecurity.this, ForgotPassword.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    ConstraintLayout changePaymentPin;
+    private void initChangePaymentPin() {
+        changePaymentPin = (ConstraintLayout) findViewById(R.id.id_cl_accountSecurity_changePaymentPin);
+        changePaymentPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AccountSecurity.this, ChangePaymentPin.class);
+                startActivity(intent);
+            }
+        });
+
+    }
+
+    ConstraintLayout forgotPaymentPin;
+    private void initForgotPaymentPin() {
+        forgotPaymentPin = (ConstraintLayout) findViewById(R.id.id_cl_accountSecurity_forgotPaymentPin);
+        forgotPaymentPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AccountSecurity.this, ForgotPaymentPin.class);
                 startActivity(intent);
             }
         });

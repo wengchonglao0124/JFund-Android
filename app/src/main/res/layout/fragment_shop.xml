@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f6f6f6"
+    tools:context=".Fragment.ShopFragment">
+
+    <ImageView
+        android:layout_width="171dp"
+        android:layout_height="161dp"
+        android:layout_marginStart="103dp"
+        android:layout_marginTop="280dp"
+        android:layout_marginEnd="101dp"
+        android:background="@drawable/shops_re_opening_soon_cuate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="81dp"
+        android:layout_marginTop="471dp"
+        android:layout_marginEnd="80dp"
+        android:fontFamily="@font/dm_sans"
+        android:lineSpacingExtra="6.4sp"
+        android:text="Online store is coming soon"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

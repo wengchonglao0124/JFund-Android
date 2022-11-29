@@ -1,5 +1,6 @@
 package com.example.jacaranda.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,8 +8,13 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 
+import com.example.jacaranda.Activity.AccountInformation;
+import com.example.jacaranda.Activity.EnterUserName;
+import com.example.jacaranda.Activity.RestaurantDetail;
 import com.example.jacaranda.Adapter.BusinessPartnerAdapter;
 import com.example.jacaranda.Adapter.RecentActivityAdapter;
 import com.example.jacaranda.Modle.BusinessPartner;
@@ -47,8 +53,8 @@ public class RestaurantFragment extends Fragment {
                              Bundle savedInstanceState) {
         if(RootView == null){
             RootView = inflater.inflate(R.layout.home_fragment_restaurant, container, false);
+            initBusinessActivity();
         }
-        initBusinessActivity();
         return RootView;
     }
 
@@ -58,6 +64,15 @@ public class RestaurantFragment extends Fragment {
         BusinessPartnerAdapter adapter = new BusinessPartnerAdapter(this.getActivity(),
                 R.layout.home_business_part_listview, business);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), RestaurantDetail.class);
+                intent.putExtra("name", business.get(position).getName());
+                intent.putExtra("address", business.get(position).getAddress());
+                startActivity(intent);
+            }
+        });
     }
 
     private void initBusinessActivityData() {

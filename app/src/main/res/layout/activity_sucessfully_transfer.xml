@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f6f6f6"
-    tools:context=".HintPage.SucessfullyTransferActivity">
+    tools:context=".HintPage.SuccessfullyTransferActivity">
 
     <ImageView
         android:id="@+id/imageView5"
@@ -18,13 +18,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView17"
+        android:id="@+id/id_tv_tranferSuccessfully_hint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="45dp"
         android:fontFamily="@font/dm_sans"
         android:lineSpacingExtra="6.4sp"
-        android:text="Sucessfully transferred"
+        android:text="Successfully transferred"
         android:textColor="#898a8d"
         android:textSize="16sp"
         android:textStyle="normal"
@@ -46,7 +46,7 @@
         android:textStyle="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView17" />
+        app:layout_constraintTop_toBottomOf="@+id/id_tv_tranferSuccessfully_hint" />
 
     <TextView
         android:id="@+id/textView19"

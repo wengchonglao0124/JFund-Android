@@ -6,6 +6,7 @@
     android:background="#01000000">
 
     <Button
+        android:id="@+id/id_btn_PaymentSetting"
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:fontFamily="@font/dm_sans"
@@ -22,6 +23,7 @@
         android:background="#c4c4c4"/>
 
     <Button
+        android:id="@+id/id_btn_RenewQRCode"
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:fontFamily="@font/dm_sans"
@@ -38,6 +40,7 @@
         android:background="#c4c4c4"/>
 
     <Button
+        android:id="@+id/id_btn_HelpAndSupport"
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:background="#ffffff"

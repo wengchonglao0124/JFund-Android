@@ -60,16 +60,18 @@
                 app:layout_constraintTop_toTopOf="@+id/view3" />
 
             <Button
+                android:id="@+id/id_btn_activity_filter"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginEnd="18dp"
+                android:onClick="onClick"
                 android:background="@drawable/other_filter"
                 app:layout_constraintBottom_toBottomOf="@+id/view3"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/view3" />
 
             <EditText
-                android:id="@+id/id_et_Email"
+                android:id="@+id/id_et_search"
                 android:layout_width="278dp"
                 android:layout_height="26dp"
                 android:layout_marginStart="36dp"
