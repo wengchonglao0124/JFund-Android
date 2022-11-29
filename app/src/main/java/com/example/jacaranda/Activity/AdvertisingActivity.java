@@ -1,5 +1,7 @@
 package com.example.jacaranda.Activity;
 
+import static com.example.jacaranda.Util.JsonToStringUtil.parseResponse;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -139,40 +141,32 @@ public class AdvertisingActivity extends AppCompatActivity {
                                     );
                                     toSignin();
                                 } else {
-                                    final JSONObject responseJson = parseResponse(response.body());
-                                    Log.i(TAG, responseJson.toString());
 
-                                    String code, message;
-                                    code = responseJson.optString("code");
+                                    try {
+                                        final JSONObject responseJson = parseResponse(response.body());
+                                        Log.i(TAG, responseJson.toString());
+
+                                        String code, message;
+                                        code = responseJson.optString("code");
 
 
-                                    if (code.equals("200")){
-                                        Intent intent = new Intent();
-                                        intent.setClass(AdvertisingActivity.this, MainActivity.class);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(intent);
-                                    }else{
-                                        showToast("Error! code:" + code);
-                                        toSignin();
+                                        if (code.equals("200")){
+                                            Intent intent = new Intent();
+                                            intent.setClass(AdvertisingActivity.this, MainActivity.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(intent);
+                                        }else{
+                                            showToast("Error! code:" + code);
+                                            toSignin();
+                                        }
+                                    }catch (IOException | JSONException e) {
+                                        Log.e(TAG, "Error parsing response", e);
                                     }
-
                                 }
                             }
                         });
             }
         }.start();
-    }
-
-    private JSONObject parseResponse(ResponseBody responseBody) {
-        if (responseBody != null) {
-            try {
-                return new JSONObject(responseBody.string());
-            } catch (IOException | JSONException e) {
-                Log.e(TAG, "Error parsing response", e);
-            }
-        }
-
-        return new JSONObject();
     }
 
     private void showAlert(String title, @Nullable String message) {
