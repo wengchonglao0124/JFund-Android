@@ -1,5 +1,10 @@
 package com.example.jacaranda.Activity;
 
+import static com.example.jacaranda.Util.JsonToStringUtil.parseResponse;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,15 +15,34 @@ import android.text.Spannable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.jacaranda.MainActivity;
 import com.example.jacaranda.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class SignUpActivity extends AppCompatActivity {
     public static SignUpActivity intance = null;
+    private static final String BACKEND_URL = "https://xp.lycyy.cc";
+    private static final String TAG = "SignUpActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,8 +185,8 @@ public class SignUpActivity extends AppCompatActivity {
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SignUpActivity.this, VerificationActivity.class);
-                startActivity(intent);
+                register();
+
             }
         });
 
@@ -224,5 +248,105 @@ public class SignUpActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private String parseInfo(){
+        try {
+            //parse values in textbox and transfer to json
+            JSONObject userInfo = new JSONObject();
+            userInfo.put("email", email.getText().toString());
+            userInfo.put("password", password.getText().toString());
+            userInfo.put("username", name.getText().toString());
+            Log.i(TAG, userInfo.toString());
+            return userInfo.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    private void register(){
+        new Thread(){
+            @Override
+            public void run() {
+
+                String userInfo = parseInfo();
+                if (userInfo == null){
+                    showAlert("Error", "Error collecting user information");
+                }else{
+                    //setup RequestBody
+                    final RequestBody requestBody = RequestBody.create(
+                            userInfo,
+                            MediaType.get("application/json; charset=utf-8")
+                    );
+
+                    Request request = new Request.Builder()
+                            .url(BACKEND_URL + "/email")
+                            .post(requestBody)
+                            .build();
+
+
+                    new OkHttpClient()
+                            .newCall(request)
+                            .enqueue(new Callback() {
+                                @Override
+                                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                    showAlert("Failed to load data", "Error: " + e.toString());
+                                }
+
+                                @Override
+                                public void onResponse(
+                                        @NonNull Call call,
+                                        @NonNull Response response
+                                ) throws IOException {
+                                    if (!response.isSuccessful()) {
+                                        showAlert(
+                                                "Failed to load page",
+                                                "Error: " + response.toString()
+                                        );
+                                    } else {
+                                        try {
+                                            final JSONObject responseJson = parseResponse(response.body());
+                                            Log.i(TAG, responseJson.toString());
+
+                                            String code;
+                                            code = responseJson.optString("code");
+
+
+                                            if (code.equals("200")){
+                                                Intent intent = new Intent(SignUpActivity.this, VerificationActivity.class);
+                                                startActivity(intent);
+                                            }else{
+                                                showToast("Error! code:" + code);
+                                            }
+                                        }catch (IOException | JSONException e) {
+                                            Log.e(TAG, "Error parsing response", e);
+                                        }
+                                    }
+                                }
+                            });
+                }
+
+
+            }
+        }.start();
+    }
+
+
+
+    private void showAlert(String title, @Nullable String message) {
+        runOnUiThread(() -> {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Ok", null)
+                    .create();
+            dialog.show();
+        });
+    }
+
+    private void showToast(String message) {
+        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_LONG).show());
     }
 }
