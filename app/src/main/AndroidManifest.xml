@@ -101,10 +101,10 @@
             android:name=".Activity.ForgotPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.AdvertisingActivity"
+            android:name=".Activity.SignInActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.SignInActivity"
+            android:name=".Activity.AdvertisingActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
