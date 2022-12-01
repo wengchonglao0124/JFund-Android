@@ -258,14 +258,17 @@ public class SignInActivity extends AppCompatActivity {
                                             showToast("Login succeeded!");
 
                                             try {
-                                                accessToken = new JSONObject(data).optString("AccessToken");
-                                                refreshToken = new JSONObject(data).optString("RefreshToken");
-                                                userID = new JSONObject(data).optString("UserID");
+                                                final JSONObject responseBody = new JSONObject(data);
+                                                accessToken = responseBody.optString("AccessToken");
+                                                refreshToken = responseBody.optString("RefreshToken");
+                                                userID = responseBody.optString("UserID");
+
                                                 SharedPreferences.Editor  editor = preferences.edit();
                                                 editor.putString("AccessToken", accessToken);
                                                 editor.putString("RefreshToken", refreshToken);
                                                 editor.putString("userID", userID);
-                                                editor.commit();
+                                                editor.apply();
+//                                                editor.commit();
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
