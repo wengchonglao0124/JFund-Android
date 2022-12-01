@@ -84,7 +84,7 @@ public class AdvertisingActivity extends AppCompatActivity {
         preferences = getSharedPreferences("config", Context.MODE_PRIVATE);
 
         String token = preferences.getString("RefreshToken", null);
-        Log.i(TAG, token);
+
         if (token == null){
             toSignin();
         }else{
