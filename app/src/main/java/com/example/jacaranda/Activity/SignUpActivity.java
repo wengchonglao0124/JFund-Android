@@ -250,7 +250,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    private String parseInfo(){
+    private JSONObject parseInfo(){
         try {
             //parse values in textbox and transfer to json
             JSONObject userInfo = new JSONObject();
@@ -258,12 +258,11 @@ public class SignUpActivity extends AppCompatActivity {
             userInfo.put("password", password.getText().toString());
             userInfo.put("username", name.getText().toString());
             Log.i(TAG, userInfo.toString());
-            return userInfo.toString();
+            return userInfo;
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
-
     }
 
     private void register(){
@@ -271,13 +270,13 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                String userInfo = parseInfo();
+                JSONObject userInfo = parseInfo();
                 if (userInfo == null){
                     showAlert("Error", "Error collecting user information");
                 }else{
                     //setup RequestBody
                     final RequestBody requestBody = RequestBody.create(
-                            userInfo,
+                            userInfo.toString(),
                             MediaType.get("application/json; charset=utf-8")
                     );
 
@@ -316,6 +315,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                                             if (code.equals("200")){
                                                 Intent intent = new Intent(SignUpActivity.this, VerificationActivity.class);
+                                                intent.putExtra("email", userInfo.optString("email"));
                                                 startActivity(intent);
                                             }else{
                                                 showToast("Error! code:" + code);
@@ -327,7 +327,6 @@ public class SignUpActivity extends AppCompatActivity {
                                 }
                             });
                 }
-
 
             }
         }.start();
