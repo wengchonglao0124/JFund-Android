@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.jacaranda.MainActivity;
 import com.example.jacaranda.R;
+import com.example.jacaranda.SelectAccount;
 
 
 import org.json.JSONException;
@@ -149,7 +150,7 @@ public class AdvertisingActivity extends AppCompatActivity {
 
                                         if (code.equals("200")){
                                             Intent intent = new Intent();
-                                            intent.setClass(AdvertisingActivity.this, MainActivity.class);
+                                            intent.setClass(AdvertisingActivity.this, SelectAccount.class);
                                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
                                             startActivity(intent);
                                         }else{
