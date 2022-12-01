@@ -212,6 +212,7 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void run() {
 
+                Log.i(TAG, json);
                 //setup RequestBody
                 final RequestBody requestBody = RequestBody.create(
                         json,
@@ -247,26 +248,28 @@ public class SignInActivity extends AppCompatActivity {
                                         final JSONObject responseJson = parseResponse(response.body());
                                         Log.i(TAG, responseJson.toString());
 
-                                        String code, message, data, token, userID;
+                                        String code, message, data, accessToken, refreshToken, userID;
                                         code = responseJson.optString("code");
                                         message = responseJson.optString("msg");
                                         data = responseJson.optString("data");
                                         Log.i(TAG, data);
 
-                                        try {
-                                            token = new JSONObject(data).optString("token");
-                                            userID = new JSONObject(data).optString("UserID");
-
-                                            SharedPreferences.Editor  editor = preferences.edit();
-                                            editor.putString("token", token);
-                                            editor.putString("userID", userID);
-                                            editor.commit();
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-
                                         if (code.equals("200")){
                                             showToast("Login succeeded!");
+
+                                            try {
+                                                accessToken = new JSONObject(data).optString("AccessToken");
+                                                refreshToken = new JSONObject(data).optString("RefreshToken");
+                                                userID = new JSONObject(data).optString("UserID");
+                                                SharedPreferences.Editor  editor = preferences.edit();
+                                                editor.putString("AccessToken", accessToken);
+                                                editor.putString("RefreshToken", refreshToken);
+                                                editor.putString("userID", userID);
+                                                editor.commit();
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+
                                             Intent intent = new Intent();
                                             intent.setClass(SignInActivity.this, SelectAccount.class);
                                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);

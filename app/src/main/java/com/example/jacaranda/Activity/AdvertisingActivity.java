@@ -82,8 +82,8 @@ public class AdvertisingActivity extends AppCompatActivity {
     private void reload(){
         preferences = getSharedPreferences("config", Context.MODE_PRIVATE);
 
-        String token = preferences.getString("token", null);
-//        Log.i(TAG, token);
+        String token = preferences.getString("RefreshToken", null);
+        Log.i(TAG, token);
         if (token == null){
             toSignin();
         }else{
@@ -103,7 +103,6 @@ public class AdvertisingActivity extends AppCompatActivity {
         new Thread(){
             @Override
             public void run() {
-
 
                 Log.i(TAG, token);
 
@@ -125,7 +124,7 @@ public class AdvertisingActivity extends AppCompatActivity {
                         .enqueue(new Callback() {
                             @Override
                             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                                showAlert("Failed to load data", "Error: " + e.toString());
+//                                showAlert("Failed to load data", "Error: " + e.toString());
                                 toSignin();
                             }
 
@@ -135,10 +134,8 @@ public class AdvertisingActivity extends AppCompatActivity {
                                     @NonNull Response response
                             ) throws IOException {
                                 if (!response.isSuccessful()) {
-                                    showAlert(
-                                            "Failed to load page",
-                                            "Error: " + response.toString()
-                                    );
+//                                    showAlert("Failed to load page",
+//                                            "Error: " + response.toString());
                                     toSignin();
                                 } else {
 
@@ -156,7 +153,7 @@ public class AdvertisingActivity extends AppCompatActivity {
                                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
                                             startActivity(intent);
                                         }else{
-                                            showToast("Error! code:" + code);
+//                                            showToast("Error! code:" + code);
                                             toSignin();
                                         }
                                     }catch (IOException | JSONException e) {
