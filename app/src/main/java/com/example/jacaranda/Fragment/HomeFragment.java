@@ -90,22 +90,6 @@ public class HomeFragment extends Fragment {
         preferences = requireActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
         app = (JacarandaApplication) getActivity().getApplication();
 
-
-        Thread thread1 = new Thread(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void run() {
-                getBalance();
-            }
-        });
-
-        thread1.start();
-
-        try {
-            thread1.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -120,6 +104,7 @@ public class HomeFragment extends Fragment {
             initClick();
 
             updateUserID(preferences.getString("userID", "0000000000000000"));
+            getBalance();
         }
         return RootView;
     }
