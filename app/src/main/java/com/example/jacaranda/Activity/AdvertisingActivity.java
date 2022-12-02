@@ -114,7 +114,7 @@ public class AdvertisingActivity extends AppCompatActivity {
                 );
 
                 Request request = new Request.Builder()
-                        .url(BACKEND_URL + "/testToken")
+                        .url(BACKEND_URL + "/getAccesstoken")
                         .addHeader("token", token)
                         .post(requestBody)
                         .build();
@@ -144,11 +144,26 @@ public class AdvertisingActivity extends AppCompatActivity {
                                         final JSONObject responseJson = parseResponse(response.body());
                                         Log.i(TAG, responseJson.toString());
 
-                                        String code, message;
+                                        String code, message, data, accessToken;
                                         code = responseJson.optString("code");
+                                        message = responseJson.optString("msg");
+                                        data = responseJson.optString("data");
 
 
                                         if (code.equals("200")){
+
+                                            try {
+                                                final JSONObject responseBody = new JSONObject(data);
+                                                accessToken = responseBody.optString("AccessToken");
+
+                                                SharedPreferences.Editor  editor = preferences.edit();
+                                                editor.putString("AccessToken", accessToken);
+                                                editor.apply();
+//                                                editor.commit();
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+
                                             Intent intent = new Intent();
                                             intent.setClass(AdvertisingActivity.this, SelectAccount.class);
                                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
