@@ -298,10 +298,7 @@ public class TopUpBalance extends AppCompatActivity {
     ) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             showToast("Payment complete!");
-            Intent intent = new Intent();
-            intent.setClass(TopUpBalance.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            finish();
         } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
             Log.i(TAG, "Payment canceled!");
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {

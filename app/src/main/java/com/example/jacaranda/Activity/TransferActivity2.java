@@ -1,14 +1,22 @@
 package com.example.jacaranda.Activity;
 
+import static com.example.jacaranda.Util.JsonToStringUtil.parseResponse;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,21 +27,40 @@ import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jacaranda.HintPage.SuccessfullyTransferActivity;
 import com.example.jacaranda.MyView.MyInputFilter;
 import com.example.jacaranda.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 
 public class TransferActivity2 extends AppCompatActivity {
+    private static final String BACKEND_URL = "https://xp.lycyy.cc";
+    private static final String PATH = "/transferTo";
+    private static final String TAG = "TransferActivity2";
+
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transfer2);
+        preferences = getSharedPreferences("config", Context.MODE_PRIVATE);
         initAll();
     }
 
@@ -183,18 +210,7 @@ public class TransferActivity2 extends AppCompatActivity {
                         if(popupWindow!=null){
                             popupWindow.dismiss();
                             progressBar.setVisibility(View.VISIBLE);
-                            Intent intent = new Intent(TransferActivity2.this, SuccessfullyTransferActivity.class);
-
-                            Timer timer = new Timer();
-                            TimerTask timerTask = new TimerTask() {
-                                @Override
-                                public void run() {
-                                    intent.putExtra("amount", transferAmount);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            };
-                            timer.schedule(timerTask,1000);
+                            transferTo();
                         }
                     }
                 });
@@ -217,6 +233,114 @@ public class TransferActivity2 extends AppCompatActivity {
         WindowManager.LayoutParams layoutParams = this.getWindow().getAttributes();
         layoutParams.alpha = f;
         this.getWindow().setAttributes(layoutParams);
+    }
+
+    private JSONObject parseInfo(){
+        try {
+            //parse values in textbox and transfer to json
+            JSONObject transferInfo = new JSONObject();
+            transferInfo.put("UserID", IDNumber.getText().toString().replace(" ",""));
+            transferInfo.put("Amount", text.getText().toString());
+            Log.i(TAG, transferInfo.toString());
+            return transferInfo;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void transferTo(){
+        new Thread(){
+            @Override
+            public void run() {
+
+                JSONObject transferInfo = parseInfo();
+                if (transferInfo == null){
+                    showAlert("Error", "Error collecting user information");
+                }else{
+                    //setup RequestBody
+                    final RequestBody requestBody = RequestBody.create(
+                            transferInfo.toString(),
+                            MediaType.get("application/json; charset=utf-8")
+                    );
+
+                    Request request = new Request.Builder()
+                            .url(BACKEND_URL + PATH)
+                            .post(requestBody)
+                            .addHeader("token",preferences.getString("AccessToken", null))
+                            .build();
+
+
+                    new OkHttpClient()
+                            .newCall(request)
+                            .enqueue(new Callback() {
+                                @Override
+                                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                    showAlert("Failed to load data", "Error: " + e.toString());
+                                }
+
+                                @Override
+                                public void onResponse(
+                                        @NonNull Call call,
+                                        @NonNull Response response
+                                ) throws IOException {
+                                    if (!response.isSuccessful()) {
+                                        showAlert(
+                                                "Failed to load page",
+                                                "Error: " + response.toString()
+                                        );
+                                    } else {
+                                        try {
+                                            final JSONObject responseJson = parseResponse(response.body());
+                                            Log.i(TAG, responseJson.toString());
+
+                                            String code;
+                                            code = responseJson.optString("code");
+
+
+                                            Timer timer = new Timer();
+                                            TimerTask timerTask = new TimerTask() {
+                                                @Override
+                                                public void run() {
+                                                    if (code.equals("200")){
+                                                        Intent intent = new Intent(TransferActivity2.this, SuccessfullyTransferActivity.class);
+                                                        intent.putExtra("amount", transferAmount);
+                                                        startActivity(intent);
+                                                        finish();
+                                                    }else{
+                                                        progressBar.setVisibility(View.INVISIBLE);
+                                                        showToast("Error! code:" + code);
+                                                    }
+                                                }
+                                            };
+                                            timer.schedule(timerTask,1000);
+
+
+                                        }catch (IOException | JSONException e) {
+                                            Log.e(TAG, "Error parsing response", e);
+                                        }
+                                    }
+                                }
+                            });
+                }
+
+            }
+        }.start();
+    }
+
+    private void showAlert(String title, @Nullable String message) {
+        runOnUiThread(() -> {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Ok", null)
+                    .create();
+            dialog.show();
+        });
+    }
+
+    private void showToast(String message) {
+        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_LONG).show());
     }
 
 }

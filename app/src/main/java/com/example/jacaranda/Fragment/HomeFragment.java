@@ -351,11 +351,11 @@ public class HomeFragment extends Fragment {
 
                             Log.i(TAG, data);
 
-
+                            String balance = "UNKNOWN";
 
                             if (code.equals("200")){
                                 try {
-                                    String balance = new JSONObject(data).optString("balanceof");
+                                    balance = new JSONObject(data).optString("balanceof");
                                     Log.i(TAG, balance);
                                     if (balance.equals("null")){
                                         balance = "0.00";
@@ -367,6 +367,7 @@ public class HomeFragment extends Fragment {
                                 }
                             }else{
                                 Log.i(TAG, message);
+                                updateBalance(balance);
                             }
 
                         }
@@ -389,9 +390,16 @@ public class HomeFragment extends Fragment {
     }
 
     private void updateBalance(String balance){
-        TextView tx_balance = RootView.findViewById(R.id.id_balance_balance);
-        Log.i(TAG, balance);
-        tx_balance.setText(balance);
+        getActivity().runOnUiThread(() -> {
+            TextView tx_balance = RootView.findViewById(R.id.id_balance_balance);
+            Log.i(TAG, balance);
+            tx_balance.setText(balance);
+        });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getBalance();
+    }
 }
