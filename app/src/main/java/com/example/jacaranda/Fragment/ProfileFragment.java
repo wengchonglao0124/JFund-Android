@@ -1,6 +1,9 @@
 package com.example.jacaranda.Fragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -22,6 +25,7 @@ import com.example.jacaranda.Activity.AccountInformation;
 import com.example.jacaranda.Activity.AccountSecurity;
 import com.example.jacaranda.Activity.HelpAndSupport;
 import com.example.jacaranda.Activity.PaymentSetting;
+import com.example.jacaranda.Activity.SignInActivity;
 import com.example.jacaranda.R;
 
 import java.util.Locale;
@@ -30,6 +34,8 @@ public class ProfileFragment extends Fragment {
     private static final int RESULT_CANCELED = 0;
     TextView name,capital;
     String userName,first;
+
+    private SharedPreferences preferences;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -43,6 +49,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferences = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
     }
 
     View RootView;
@@ -153,21 +160,30 @@ public class ProfileFragment extends Fragment {
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LayoutInflater inflater = getLayoutInflater();
-                View window = inflater.inflate(R.layout.log_out_popupwindow, null);
-                PopupWindow popupWindow = new PopupWindow(view ,
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT, true);
-                popupWindow.setContentView(window);
+//                LayoutInflater inflater = getLayoutInflater();
+//                View window = inflater.inflate(R.layout.log_out_popupwindow, null);
+//                PopupWindow popupWindow = new PopupWindow(view ,
+//                        ViewGroup.LayoutParams.MATCH_PARENT,
+//                        ViewGroup.LayoutParams.WRAP_CONTENT, true);
+//                popupWindow.setContentView(window);
+//
+//                popupWindow.showAtLocation(view, Gravity.CENTER_VERTICAL,0,500);
+//                bgAlpha(0.618f);
+//                popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+//                    @Override
+//                    public void onDismiss() {
+//                        bgAlpha(1.0f);
+//                    }
+//                });
 
-                popupWindow.showAtLocation(view, Gravity.CENTER_VERTICAL,0,500);
-                bgAlpha(0.618f);
-                popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                    @Override
-                    public void onDismiss() {
-                        bgAlpha(1.0f);
-                    }
-                });
+                SharedPreferences.Editor  editor = preferences.edit();
+                editor.clear();
+                editor.commit();
+
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), SignInActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
     }
