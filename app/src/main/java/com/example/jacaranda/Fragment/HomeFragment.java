@@ -102,9 +102,7 @@ public class HomeFragment extends Fragment {
             initRecentActivity();
             initBusinessPartner();
             initClick();
-
             updateUserID(preferences.getString("userID", "0000000000000000"));
-            getBalance();
         }
         return RootView;
     }

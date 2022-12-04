@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.Spannable;
@@ -20,15 +21,19 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jacaranda.Database.LoginDBHelper;
 import com.example.jacaranda.JacarandaApplication;
-import com.example.jacaranda.MainActivity;
+import com.example.jacaranda.Modle.UserCredential;
 import com.example.jacaranda.R;
 import com.example.jacaranda.SelectAccount;
+import com.example.jacaranda.Util.ToastUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,7 +47,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -53,6 +57,7 @@ public class SignInActivity extends AppCompatActivity {
     private static final String PATH = "/login";
 
     private SharedPreferences preferences;
+    private LoginDBHelper mHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +76,12 @@ public class SignInActivity extends AppCompatActivity {
         intiForgotPassword();
         initSignUp();
         initSignIn();
+        initRememberMe();
+    }
+
+    CheckBox rememberMe;
+    private void initRememberMe(){
+        rememberMe = (CheckBox) findViewById(R.id.id_ck_rememberMe);
     }
 
     Button signIn;
@@ -82,26 +93,8 @@ public class SignInActivity extends AppCompatActivity {
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText et_email, et_password;
-                et_email = findViewById(R.id.id_et_Email);
-                et_password = findViewById(R.id.id_et_Password);
-
-                String email, password;
-
-                email = et_email.getText().toString();
-                password = et_password.getText().toString();
-
-                //parse values in textbox and transfer to json
-                JSONObject userInfo = new JSONObject();
-
-                try {
-                    userInfo.put("email", email);
-                    userInfo.put("password", password);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                authenticateEmailPassword(userInfo.toString());
+                JSONObject user_json = parseInfo();
+                authenticateEmailPassword(user_json);
             }
         });
         email.addTextChangedListener(new TextWatcher() {
@@ -123,7 +116,17 @@ public class SignInActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+            }
+        });
+        email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus){
+                    String pwd = mHelper.findPasswordByEmail(email.getText().toString());
+                    Log.i(TAG, pwd);
+                    password.setText(pwd);
+                    rememberMe.setChecked(pwd != "");
+                }
             }
         });
     }
@@ -162,7 +165,6 @@ public class SignInActivity extends AppCompatActivity {
         password.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -207,15 +209,30 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
-    private void authenticateEmailPassword(String json){
+    private JSONObject parseInfo(){
+
+        //parse values in textbox and transfer to json
+        JSONObject userInfo = new JSONObject();
+
+        try {
+            userInfo.put("email", email.getText().toString());
+            userInfo.put("password", password.getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return userInfo;
+    }
+
+    private void authenticateEmailPassword(JSONObject user_json){
         new Thread(){
             @Override
             public void run() {
 
-                Log.i(TAG, json);
+                Log.i(TAG, user_json.toString());
                 //setup RequestBody
                 final RequestBody requestBody = RequestBody.create(
-                        json,
+                        user_json.toString(),
                         MediaType.get("application/json; charset=utf-8")
                 );
 
@@ -256,6 +273,8 @@ public class SignInActivity extends AppCompatActivity {
 
                                         if (code.equals("200")){
                                             showToast("Login succeeded!");
+
+                                            rememberUser(user_json);
 
                                             try {
                                                 final JSONObject responseBody = new JSONObject(data);
@@ -306,5 +325,38 @@ public class SignInActivity extends AppCompatActivity {
 
     private void showToast(String message) {
         runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_LONG).show());
+    }
+
+    private void rememberUser(JSONObject user_json){
+        UserCredential userCredential = new UserCredential(user_json.optString("email"),
+                user_json.optString("password"));
+        if (rememberMe.isChecked()){
+            mHelper.save(userCredential);
+        }
+    }
+
+    private void reload(){
+        UserCredential userCredential = mHelper.queryOnTop();
+        if (userCredential != null){
+            email.setText(userCredential.email);
+            password.setText(userCredential.password);
+            rememberMe.setChecked(true);
+        }
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mHelper = LoginDBHelper.getInstance(this);
+        mHelper.openWriteLink();
+        mHelper.openReadLink();
+        reload();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mHelper.closeLink();
     }
 }
