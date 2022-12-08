@@ -14,7 +14,7 @@ import java.util.List;
 
 public class LoginDBHelper extends SQLiteOpenHelper {
 
-    private static final String DB_NAME = "user.db";
+    private static final String DB_NAME = "Jacaranda.db";
     private static final String TABLE_NAME = "UserCredential";
     private static final int DB_VERSION = 1;
     private static final String TAG = "LoginDBHelper";
@@ -137,8 +137,7 @@ public class LoginDBHelper extends SQLiteOpenHelper {
         Log.i(TAG, "findPassByEmail");
         Cursor cursor = mRDB.query(TABLE_NAME,
                 null,
-                "email=?",
-                new String[]{email},
+                "email=?", new String[]{email},
                 null,
                 null,
                 null);

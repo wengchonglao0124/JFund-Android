@@ -1,30 +1,80 @@
 package com.example.jacaranda;
 
+import static com.example.jacaranda.Util.JsonToStringUtil.parseResponse;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.example.jacaranda.Activity.SignInActivity;
 import com.example.jacaranda.Adapter.ViewPagerAdapter;
+import com.example.jacaranda.Database.ActivityDBHelper;
+import com.example.jacaranda.Database.LoginDBHelper;
 import com.example.jacaranda.Fragment.ActivityFragment;
 import com.example.jacaranda.Fragment.HomeFragment;
 import com.example.jacaranda.Fragment.ProfileFragment;
 import com.example.jacaranda.Fragment.ShopFragment;
+import com.example.jacaranda.Modle.Activity;
+import com.example.jacaranda.Modle.RecentActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     ViewPager2 ViewPager;
+
+    private JacarandaApplication app;
+
+    private static final String TAG = "MainActivity";
+
+    private static final String PATH = "/bill";
+
+    private ActivityDBHelper mHelper;
+
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        app = (JacarandaApplication)getApplication();
+        preferences = getSharedPreferences("config", Context.MODE_PRIVATE);
+
         initViewPage();
         initBottomNavigation();
     }
@@ -125,5 +175,127 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }else if(position == R.id.id_btn_showAll){
             ViewPager.setCurrentItem(2);
         }
+    }
+
+    private void loadActivities(String timestamp){
+        new Thread(){
+            @Override
+            public void run() {
+
+                //parse values in textbox and transfer to json
+                JSONObject time = new JSONObject();
+
+                try {
+                    time.put("time", timestamp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.i(TAG, time.toString());
+                //setup RequestBody
+                final RequestBody requestBody = RequestBody.create(
+                        time.toString(),
+                        MediaType.get("application/json; charset=utf-8")
+                );
+
+                Request request = new Request.Builder()
+                        .url(app.getURL() + PATH)
+                        .addHeader("token",preferences.getString("AccessToken", null))
+                        .post(requestBody)
+                        .build();
+
+                new OkHttpClient()
+                        .newCall(request)
+                        .enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                showAlert("Failed to load data", "Error: " + e.toString());
+                            }
+
+                            @Override
+                            public void onResponse(
+                                    @NonNull Call call,
+                                    @NonNull Response response
+                            ) throws IOException {
+                                if (!response.isSuccessful()) {
+                                    showAlert(
+                                            "Failed to load page",
+                                            "Error: " + response.toString()
+                                    );
+                                } else {
+                                    try {
+                                        final JSONObject responseJson = parseResponse(response.body());
+                                        Log.i(TAG, responseJson.toString());
+
+                                        String code, message, data, accessToken, refreshToken, userID;
+                                        code = responseJson.optString("code");
+                                        message = responseJson.optString("msg");
+                                        data = responseJson.optString("data");
+                                        Log.i(TAG, data);
+
+                                        //判断是否成功
+                                        if (code.equals("200")) {
+                                            showToast("Records retrieved");
+                                            Log.i(TAG, data);
+
+                                            List<Activity> activitys = new ArrayList<>();
+                                            activitys = JSON.parseArray(data, Activity.class);
+                                            mHelper.insertActivities(activitys);
+
+                                        }else{
+                                            showToast(message);
+                                        }
+
+                                    } catch (IOException | JSONException e) {
+                                        Log.e(TAG, "Error parsing response", e);
+                                    }
+
+                                }
+                            }
+                        });
+
+            }
+        }.start();
+    }
+
+    private void showAlert(String title, @Nullable String message) {
+        runOnUiThread(() -> {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Ok", null)
+                    .create();
+            dialog.show();
+        });
+    }
+
+    private void showToast(String message) {
+        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_LONG).show());
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(TAG,"ONSTART");
+        mHelper = ActivityDBHelper.getInstance(this);
+        mHelper.openWriteLink();
+        mHelper.openReadLink();
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.WEEK_OF_YEAR, -1);
+        date = calendar.getTime();
+//        loadActivities(date);
+        Log.i(TAG, df.format(date));
+        loadActivities(df.format(date));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mHelper.closeLink();
     }
 }
