@@ -29,7 +29,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jacaranda.HintPage.SuccessfullyTransferActivity;
 import com.example.jacaranda.MyView.MyInputFilter;
 import com.example.jacaranda.R;
 
@@ -211,6 +210,12 @@ public class TransferActivity2 extends AppCompatActivity {
                             popupWindow.dismiss();
                             progressBar.setVisibility(View.VISIBLE);
                             transferTo();
+
+//                            progressBar.setVisibility(View.INVISIBLE);
+//                            Intent intent = new Intent(TransferActivity2.this, EnterPin.class);
+//                            intent.putExtra("amount", transferAmount);
+//                            startActivity(intent);
+//                            finish();
                         }
                     }
                 });
@@ -294,21 +299,33 @@ public class TransferActivity2 extends AppCompatActivity {
                                             final JSONObject responseJson = parseResponse(response.body());
                                             Log.i(TAG, responseJson.toString());
 
-                                            String code;
+                                            String code, data;
                                             code = responseJson.optString("code");
+                                            data = responseJson.optString("data");
 
 
                                             Timer timer = new Timer();
                                             TimerTask timerTask = new TimerTask() {
                                                 @Override
                                                 public void run() {
+                                                    progressBar.setVisibility(View.INVISIBLE);
                                                     if (code.equals("200")){
-                                                        Intent intent = new Intent(TransferActivity2.this, SuccessfullyTransferActivity.class);
-                                                        intent.putExtra("amount", transferAmount);
-                                                        startActivity(intent);
-                                                        finish();
+
+                                                        try {
+                                                            final JSONObject responseBody = new JSONObject(data);
+                                                            String amount, fid;
+                                                            fid = responseBody.optString("fid");
+                                                            amount = responseBody.optString("amount");
+                                                            Intent intent = new Intent(TransferActivity2.this, CheckPin.class);
+                                                            intent.putExtra("fid", fid);
+                                                            intent.putExtra("amount", amount);
+                                                            startActivity(intent);
+                                                            finish();
+                                                        } catch (JSONException e) {
+                                                            e.printStackTrace();
+                                                        }
+
                                                     }else{
-                                                        progressBar.setVisibility(View.INVISIBLE);
                                                         showToast("Error! code:" + code);
                                                     }
                                                 }
