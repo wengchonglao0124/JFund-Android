@@ -22,12 +22,19 @@ public class SuccessfullyTransferActivity extends AppCompatActivity {
     private void initAll() {
         initBtn();
         setAmount();
+        setName();
     }
 
     TextView amount;
     private void setAmount() {
         amount = (TextView) findViewById(R.id.id_tv_tranferAmount);
         amount.setText("$ "+getIntent().getStringExtra("amount"));
+    }
+
+    TextView name;
+    private void setName() {
+        name = (TextView) findViewById(R.id.id_tv_tranferSuccessfully_name);
+        name.setText(" To "+getIntent().getStringExtra("username"));
     }
 
     Button done;

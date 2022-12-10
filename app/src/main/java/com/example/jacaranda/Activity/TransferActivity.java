@@ -211,12 +211,19 @@ public class TransferActivity extends AppCompatActivity {
                                             final JSONObject responseJson = parseResponse(response.body());
                                             Log.i(TAG, responseJson.toString());
 
-                                            String code;
+                                            String code, message, data;
                                             code = responseJson.optString("code");
+                                            message = responseJson.optString("msg");
+                                            data = responseJson.optString("data");
 
                                             if (code.equals("200")){
+                                                String username;
+                                                final JSONObject responseBody = new JSONObject(data);
+                                                username = responseBody.optString("UserName");
+
                                                 Intent i = new Intent(TransferActivity.this, TransferActivity2.class);
                                                 i.putExtra("ID",IDNumber);
+                                                i.putExtra("username",username);
                                                 startActivity(i);
                                             }else{
                                                 showToast("Error! code:" + code);

@@ -70,10 +70,14 @@ public class TransferActivity2 extends AppCompatActivity {
         setID();
     }
 
+    TextView tv_name;
     TextView IDNumber;
     private void setID() {
         IDNumber = (TextView) findViewById(R.id.id_tv_IDNumber);
         IDNumber.setText(getIntent().getStringExtra("ID"));
+
+        tv_name = (TextView) findViewById(R.id.id_tv_tranferName);
+        tv_name.setText(getIntent().getStringExtra("username"));
     }
 
     Button back;
@@ -319,6 +323,7 @@ public class TransferActivity2 extends AppCompatActivity {
                                                             Intent intent = new Intent(TransferActivity2.this, CheckPin.class);
                                                             intent.putExtra("fid", fid);
                                                             intent.putExtra("amount", amount);
+                                                            intent.putExtra("username", tv_name.getText().toString());
                                                             startActivity(intent);
                                                             finish();
                                                         } catch (JSONException e) {
