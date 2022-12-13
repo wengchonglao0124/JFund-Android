@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.Spannable;
@@ -19,9 +18,7 @@ import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -33,7 +30,6 @@ import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.Modle.UserCredential;
 import com.example.jacaranda.R;
 import com.example.jacaranda.SelectAccount;
-import com.example.jacaranda.Util.ToastUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -331,12 +327,12 @@ public class SignInActivity extends AppCompatActivity {
         UserCredential userCredential = new UserCredential(user_json.optString("email"),
                 user_json.optString("password"));
         if (rememberMe.isChecked()){
-            mHelper.save(userCredential);
+            mHelper.saveUser(userCredential);
         }
     }
 
     private void reload(){
-        UserCredential userCredential = mHelper.queryOnTop();
+        UserCredential userCredential = mHelper.queryUserOnTop();
         if (userCredential != null){
             email.setText(userCredential.email);
             password.setText(userCredential.password);

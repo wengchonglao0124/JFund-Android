@@ -3,6 +3,7 @@ package com.example.jacaranda.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.RenderEffect;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -24,12 +25,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.example.jacaranda.Activity.ActivitiesDetail;
-import com.example.jacaranda.Activity.RestaurantDetail;
 import com.example.jacaranda.Activity.TopUpBalance;
 import com.example.jacaranda.Adapter.RecentActivityAdapter;
 import com.example.jacaranda.Adapter.FragmentPagerAdapter;
 import com.example.jacaranda.JacarandaApplication;
+import com.example.jacaranda.Modle.Activity;
 import com.example.jacaranda.Modle.RecentActivity;
 import com.example.jacaranda.MyView.NoScrollListView;
 import com.example.jacaranda.Activity.NotificationActivity;
@@ -48,11 +50,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import okhttp3.Call;
@@ -74,6 +80,15 @@ public class HomeFragment extends Fragment {
     private static final String BACKEND_URL = "https://xp.lycyy.cc";
     private JacarandaApplication app;
     private SharedPreferences preferences;
+    private static final String PATH_BEFORE = "/bill_before";
+    private static final String PATH_AFTER = "/bill";
+
+    private Date lastUpdateTime;
+
+    private int currentView = R.layout.home_activitiy_part_case1;
+
+    private boolean recentViewCreated = false;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -84,24 +99,34 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
+
+
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+
         preferences = requireActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
         app = (JacarandaApplication) getActivity().getApplication();
 
+        lastUpdateTime = new Date();
+        getActivitiesBefore(df.format(lastUpdateTime));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView");
         if(RootView == null){
             RootView = inflater.inflate(R.layout.fragment_home, container, false);
             initEvent();
-            initRecentActivity();
-            initBusinessPartner();
-            initClick();
+//            initRecentActivity();
+//            initBusinessPartner();
+//            initClick();
             updateUserID(preferences.getString("userID", "0000000000000000"));
         }
         return RootView;
@@ -113,22 +138,29 @@ public class HomeFragment extends Fragment {
         event.setVisibility(View.GONE);
     }
 
+    private LinearLayout recentActivity;
+    private LayoutInflater inflater;
+    private View view;
+    private NoScrollListView listView;
+    private RecentActivityAdapter activityAdapter;
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void initRecentActivity() {
-        initRecentActivityData();
-        LinearLayout recentActivity = RootView.findViewById(R.id.id_ll_recentActivity);
-        LayoutInflater inflater = getLayoutInflater();
+//        initRecentActivityData();
+        recentActivity = RootView.findViewById(R.id.id_ll_recentActivity);
+        inflater = getLayoutInflater();
         if (activityList.size() == 0){
-            View view = inflater.inflate(R.layout.home_activitiy_part_case1, null);
+            currentView = R.layout.home_activitiy_part_case1;
+            view = inflater.inflate(R.layout.home_activitiy_part_case1, null);
             recentActivity.addView(view);
             view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
         }else if (activityList.size() > 0 && activityList.size() <= 3){
-            View listview = inflater.inflate(R.layout.home_activity_part_case2, null);
-            recentActivity.addView(listview);
-            NoScrollListView listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
-            RecentActivityAdapter adapter = new RecentActivityAdapter(this.getActivity(),
+            currentView = R.layout.home_activity_part_case2;
+            view = inflater.inflate(R.layout.home_activity_part_case2, null);
+            recentActivity.addView(view);
+            listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
+            activityAdapter = new RecentActivityAdapter(this.getActivity(),
                     R.layout.home_activity_part_listview, activityList);
-            listView.setAdapter(adapter);
+            listView.setAdapter(activityAdapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -141,16 +173,18 @@ public class HomeFragment extends Fragment {
                 }
             });
         }else if(activityList.size() > 3){
-            List<RecentActivity> currentList = new ArrayList<>();
-            currentList.add(activityList.get(0));
-            currentList.add(activityList.get(1));
-            currentList.add(activityList.get(2));
-            View listview = inflater.inflate(R.layout.home_activity_part_case3,null);
-            recentActivity.addView(listview);
-            NoScrollListView listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
-            RecentActivityAdapter adapter = new RecentActivityAdapter(this.getActivity(),
-                    R.layout.home_activity_part_listview, currentList);
-            listView.setAdapter(adapter);
+            activityList = activityList.subList(0,3);
+//            List<RecentActivity> currentList = new ArrayList<>();
+//            currentList.add(activityList.get(0));
+//            currentList.add(activityList.get(1));
+//            currentList.add(activityList.get(2));
+            currentView = R.layout.home_activity_part_case3;
+            view = inflater.inflate(R.layout.home_activity_part_case3,null);
+            recentActivity.addView(view);
+            listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
+            activityAdapter = new RecentActivityAdapter(this.getActivity(),
+                    R.layout.home_activity_part_listview, activityList);
+            listView.setAdapter(activityAdapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
@@ -164,6 +198,7 @@ public class HomeFragment extends Fragment {
                 }
             });
         }
+        recentViewCreated = true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -356,7 +391,6 @@ public class HomeFragment extends Fragment {
                         }
                     }
                 });
-
     }
 
     private void updateUserID(String userID){
@@ -380,9 +414,363 @@ public class HomeFragment extends Fragment {
         });
     }
 
+
+    private void getActivitiesBefore(String timestamp){
+        new Thread(){
+            @Override
+            public void run() {
+
+                //parse values in textbox and transfer to json
+                JSONObject time = new JSONObject();
+
+                try {
+                    time.put("time", timestamp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.i(TAG, time.toString());
+                //setup RequestBody
+                final RequestBody requestBody = RequestBody.create(
+                        time.toString(),
+                        MediaType.get("application/json; charset=utf-8")
+                );
+
+                Request request = new Request.Builder()
+                        .url(app.getURL() + PATH_BEFORE)
+                        .addHeader("token",preferences.getString("AccessToken", null))
+                        .post(requestBody)
+                        .build();
+
+                new OkHttpClient()
+                        .newCall(request)
+                        .enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                showAlert("Failed to load data", "Error: " + e.toString());
+                            }
+
+                            @RequiresApi(api = Build.VERSION_CODES.N)
+                            @Override
+                            public void onResponse(
+                                    @NonNull Call call,
+                                    @NonNull Response response
+                            ) throws IOException {
+                                if (!response.isSuccessful()) {
+                                    showAlert(
+                                            "Failed to load page",
+                                            "Error: " + response.toString()
+                                    );
+                                } else {
+                                    final JSONObject responseJson = parseResponse(response.body());
+                                    Log.i(TAG, responseJson.toString());
+
+                                    String code, message, data;
+                                    code = responseJson.optString("code");
+                                    message = responseJson.optString("msg");
+                                    data = responseJson.optString("data");
+                                    Log.i(TAG, data);
+
+                                    //判断是否成功
+                                    if (code.equals("200")) {
+//                                            showToast("Records retrieved");
+                                        List<Activity> activities = JSON.parseArray(data, Activity.class);
+                                        Log.i(TAG, activities.toString());
+                                        if (!activities.isEmpty()){
+                                            try {
+                                                activityList = transferToRecentActivity(activities);
+                                                getActivity().runOnUiThread(() -> initActivityAndMore());
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+
+                                    }else{
+                                        showToast(message);
+                                    }
+
+                                }
+                            }
+                        });
+
+            }
+        }.start();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void initActivityAndMore(){
+        initRecentActivity();
+        initBusinessPartner();
+        initClick();
+    }
+
+    private void getActivitiesAfter(String timestamp){
+        new Thread(){
+            @Override
+            public void run() {
+
+                //parse values in textbox and transfer to json
+                JSONObject time = new JSONObject();
+
+                try {
+                    time.put("time", timestamp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.i(TAG, time.toString());
+                //setup RequestBody
+                final RequestBody requestBody = RequestBody.create(
+                        time.toString(),
+                        MediaType.get("application/json; charset=utf-8")
+                );
+
+                Request request = new Request.Builder()
+                        .url(app.getURL() + PATH_AFTER)
+                        .addHeader("token",preferences.getString("AccessToken", null))
+                        .post(requestBody)
+                        .build();
+
+                new OkHttpClient()
+                        .newCall(request)
+                        .enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                showAlert("Failed to load data", "Error: " + e.toString());
+                            }
+
+                            @RequiresApi(api = Build.VERSION_CODES.N)
+                            @Override
+                            public void onResponse(
+                                    @NonNull Call call,
+                                    @NonNull Response response
+                            ) throws IOException {
+                                if (!response.isSuccessful()) {
+                                    showAlert(
+                                            "Failed to load page",
+                                            "Error: " + response.toString()
+                                    );
+                                } else {
+                                    final JSONObject responseJson = parseResponse(response.body());
+                                    Log.i(TAG, responseJson.toString());
+
+                                    String code, message, data;
+                                    code = responseJson.optString("code");
+                                    message = responseJson.optString("msg");
+                                    data = responseJson.optString("data");
+                                    Log.i(TAG, data);
+
+                                    //判断是否成功
+                                    if (code.equals("200")) {
+//                                            showToast("Records retrieved");
+                                        List<Activity> activities = JSON.parseArray(data, Activity.class);
+                                        Log.i(TAG, activities.toString());
+                                        if (!activities.isEmpty()){
+                                            getActivity().runOnUiThread(() -> {
+                                                try {
+                                                    updateActivityList(activities);
+                                                } catch (ParseException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            });
+                                        }
+
+                                    }else{
+                                        showToast(message);
+                                    }
+
+                                }
+                            }
+                        });
+
+            }
+        }.start();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void updateActivityList(List<Activity> activities) throws ParseException {
+        int oldLen = activityList.size();
+        List<RecentActivity> recentActivities = transferToRecentActivity(activities);
+        recentActivities.addAll(activityList);
+        if (recentActivities.size()>4){
+            activityList = recentActivities.subList(0,4);
+        }else{
+            activityList = recentActivities;
+        }
+        updateRecentActivityUI(oldLen);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private List<RecentActivity> transferToRecentActivity(List<Activity> activities) throws ParseException {
+
+        List<RecentActivity> recentActivities = new ArrayList<>();
+
+        String payUser, receiveUser, dateTime, id;
+        id = preferences.getString("userID", null);
+        for (Activity activity: activities){
+            RecentActivity recentActivity = new RecentActivity();
+//            Log.i(TAG, activity.getReceipt());
+            recentActivity.setReceipt(activity.getReceipt());
+            recentActivity.setImageName("payoneer");
+
+            receiveUser = activity.getReceiveUser();
+            payUser = activity.getPayUser();
+
+            if (receiveUser.equals(id)){
+                recentActivity.setAmount(activity.getAmount());
+                if (payUser.equals(id)){
+                    recentActivity.setName("topUp");
+                    recentActivity.setType("topUp");
+                    recentActivity.setProfilePic("topUp");
+                }else{
+                    recentActivity.setName(activity.getPayUsername());
+                    recentActivity.setType("receive");
+                    recentActivity.setProfilePic(activity.getPayColor());
+                }
+            }else {
+                recentActivity.setAmount(-activity.getAmount());
+                recentActivity.setName(activity.getReceiveUsername());
+                recentActivity.setType("pay");
+                recentActivity.setProfilePic(activity.getReceiveColor());
+            }
+
+            dateTime = activity.getDateString();
+            recentActivity.setDateTime(dateTime);
+            recentActivity.setDateString(sdf.format(Objects.requireNonNull(df.parse(dateTime))));
+
+            recentActivities.add(recentActivity);
+        }
+        activities.clear();
+        return recentActivities;
+    }
+
+    private void updateRecentActivityUI(int oldView){
+        Log.i(TAG, "updateRecentActivityUI");
+        int currentLen = activityList.size();
+        Log.i("updateRecentActivityUI", String.valueOf(oldView));
+        Log.i("updateRecentActivityUI", String.valueOf(currentView));
+        Log.i("updateRecentActivityUI", activityList.toString());
+
+        if (oldView == R.layout.home_activitiy_part_case1){
+            Log.i("updateRecentActivityUI", "case1");
+
+
+            recentActivity.removeView(view);
+            if (currentLen > 3){
+                activityList = activityList.subList(0,3);
+                this.currentView = R.layout.home_activity_part_case3;
+                view = inflater.inflate(R.layout.home_activity_part_case3, null);
+                activityAdapter = new RecentActivityAdapter(this.getActivity(),
+                        R.layout.home_activity_part_listview, activityList);
+            }else{
+                this.currentView = R.layout.home_activity_part_case2;
+                view = inflater.inflate(R.layout.home_activity_part_case2, null);
+                activityAdapter = new RecentActivityAdapter(this.getActivity(),
+                        R.layout.home_activity_part_listview, activityList);
+            }
+
+            recentActivity.addView(view);
+            listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
+            listView.setAdapter(activityAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
+                    intent.putExtra("image", activityList.get(position).getImageName());
+                    intent.putExtra("name", activityList.get(position).getName());
+                    intent.putExtra("amount", activityList.get(position).getBalance());
+                    startActivity(intent);
+                }
+            });
+        }else if (oldView == R.layout.home_activity_part_case3){
+            Log.i("updateRecentActivityUI", "case3");
+
+            if (currentLen > 3){
+                activityAdapter.remove(activityList.get(3));
+                activityList = activityList.subList(0,3);
+                activityAdapter.notifyDataSetChanged();
+            }
+        }else{
+            Log.i("updateRecentActivityUI", "case2");
+
+            if (currentLen > 3){
+                activityAdapter.remove(activityList.get(3));
+                activityList = activityList.subList(0,3);
+                this.currentView = R.layout.home_activity_part_case3;
+                recentActivity.removeView(view);
+                view = inflater.inflate(R.layout.home_activity_part_case3, null);
+                activityAdapter = new RecentActivityAdapter(this.getActivity(),
+                        R.layout.home_activity_part_listview, activityList);
+                recentActivity.addView(view);
+
+                listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
+                listView.setAdapter(activityAdapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
+                        intent.putExtra("image", activityList.get(position).getImageName());
+                        intent.putExtra("name", activityList.get(position).getName());
+                        intent.putExtra("amount", activityList.get(position).getBalance());
+                        startActivity(intent);
+                    }
+                });
+            }else{
+                activityAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+    private void showAlert(String title, @Nullable String message) {
+        getActivity().runOnUiThread(() -> {
+            AlertDialog dialog = new AlertDialog.Builder(getContext())
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Ok", null)
+                    .create();
+            dialog.show();
+        });
+    }
+
+    private void showToast(String message) {
+        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void updateUI(){
+        getBalance();
+
+        if (recentViewCreated){
+            if (activityList.isEmpty()){
+                getActivitiesAfter(df.format(lastUpdateTime));
+            }else{
+                getActivitiesAfter(activityList.get(0).getDateTime());
+            }
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.i(TAG,"ONSTART");
+//        initActivitiesData();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onResume() {
         super.onResume();
-        getBalance();
+        updateUI();
+    }
+
+    private int oldLen = 0;
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onStop() {
+        Log.i(TAG,"onStop");
+        super.onStop();
     }
 }

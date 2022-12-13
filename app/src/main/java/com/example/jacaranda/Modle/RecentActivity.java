@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class RecentActivity {
+
     private String imageName;
     private String name;
     private String dateString;
@@ -16,11 +17,75 @@ public class RecentActivity {
     private String Group;
     private int DateInt;
 
+    private String receipt;
+    private String dateTime;
+    private String type;
+    private String profilePic;
+
     public RecentActivity(String imageName, String name, String dateString, double amount){
         this.imageName = imageName;
         this.name = name;
         this.dateString = dateString;
         this.amount = amount;
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
+    }
+
+    public RecentActivity() {
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDateString() {
+        return dateString;
+    }
+
+    public void setDateString(String dateString) {
+        this.dateString = dateString;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public void setDateInt(int dateInt) {
+        DateInt = dateInt;
+    }
+
+    public String getReceipt() {
+        return receipt;
+    }
+
+    public void setReceipt(String receipt) {
+        this.receipt = receipt;
+    }
+
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
     }
 
     public String getImageName(){ return imageName; }
@@ -108,5 +173,16 @@ public class RecentActivity {
     public String getYear(){
         String[] newStr = this.dateString.split(" ");
         return newStr[2];
+    }
+
+    @Override
+    public String toString() {
+        return "RecentActivity{" +
+                "imageName='" + imageName + '\'' +
+                ", name='" + name + '\'' +
+                ", dateString='" + dateString + '\'' +
+                ", balance='" + balance + '\'' +
+                ", amount=" + amount +
+                '}';
     }
 }

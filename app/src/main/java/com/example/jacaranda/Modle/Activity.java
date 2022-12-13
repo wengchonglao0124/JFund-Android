@@ -5,22 +5,26 @@ public class Activity {
     private String type;
     private String payUser;
     private String payUsername;
+    private String payColor;
     private String receiveUser;
     private String receiveUsername;
-    private String amount;
+    private String receiveColor;
+    private double amount;
     private String dateString;
     private String receipt;
 
     public Activity(){}
 
-    public Activity(String type, String payUser, String payUsername, String receiveUser, String receiveUsername, String amount, String date, String receipt) {
+    public Activity(String type, String payUser, String payUsername, String payColor, String receiveUser, String receiveUsername, String receiveColor, double amount, String dateString, String receipt) {
         this.type = type;
         this.payUser = payUser;
         this.payUsername = payUsername;
+        this.payColor = payColor;
         this.receiveUser = receiveUser;
         this.receiveUsername = receiveUsername;
+        this.receiveColor = receiveColor;
         this.amount = amount;
-        this.dateString = date;
+        this.dateString = dateString;
         this.receipt = receipt;
     }
 
@@ -64,11 +68,11 @@ public class Activity {
         this.receiveUsername = receiveUsername;
     }
 
-    public String getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -88,17 +92,35 @@ public class Activity {
         this.receipt = receipt;
     }
 
+    public String getPayColor() {
+        return payColor;
+    }
+
+    public void setPayColor(String payColor) {
+        this.payColor = payColor;
+    }
+
+    public String getReceiveColor() {
+        return receiveColor;
+    }
+
+    public void setReceiveColor(String receiveColor) {
+        this.receiveColor = receiveColor;
+    }
+
     @Override
     public String toString() {
         return "Activity{" +
                 "type='" + type + '\'' +
                 ", payUser='" + payUser + '\'' +
                 ", payUsername='" + payUsername + '\'' +
+                ", payColor='" + payColor + '\'' +
                 ", receiveUser='" + receiveUser + '\'' +
                 ", receiveUsername='" + receiveUsername + '\'' +
-                ", Amount='" + amount + '\'' +
-                ", Date='" + dateString + '\'' +
-                ", Receipt='" + receipt + '\'' +
+                ", receiveColor='" + receiveColor + '\'' +
+                ", amount='" + amount + '\'' +
+                ", dateString='" + dateString + '\'' +
+                ", receipt='" + receipt + '\'' +
                 '}';
     }
 }

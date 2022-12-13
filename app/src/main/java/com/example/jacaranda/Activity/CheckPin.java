@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -177,6 +178,8 @@ public class CheckPin extends AppCompatActivity {
                                                     if (code.equals("200")){
                                                         Intent intent = new Intent(CheckPin.this, SuccessfullyTransferActivity.class);
                                                         intent.putExtra("amount", getIntent().getStringExtra("amount"));
+                                                        Log.i(TAG, getIntent().getStringExtra("username"));
+                                                        intent.putExtra("username", getIntent().getStringExtra("username"));
                                                         startActivity(intent);
                                                         finish();
                                                     }else{
