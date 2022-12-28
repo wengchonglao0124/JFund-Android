@@ -107,6 +107,7 @@ public class HomeFragment extends Fragment {
                     intent.putExtra("image", activityList.get(position).getImageName());
                     intent.putExtra("name", activityList.get(position).getName());
                     intent.putExtra("amount", activityList.get(position).getBalance());
+                    intent.putExtra("extra", activityList.get(position).getExtra());
                     startActivity(intent);
                 }
             });
@@ -130,6 +131,7 @@ public class HomeFragment extends Fragment {
                     intent.putExtra("image", activityList.get(position).getImageName());
                     intent.putExtra("name", activityList.get(position).getName());
                     intent.putExtra("amount", activityList.get(position).getBalance());
+                    intent.putExtra("extra", activityList.get(position).getExtra());
                     startActivity(intent);
                 }
             });

@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f6f6f6">
+
+    <Button
+        android:id="@+id/id_btn_filter_back"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/chevron_back1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView27"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/dm_sans"
+        android:lineSpacingExtra="6.4sp"
+        android:text="Filter"
+        android:textColor="#1e1e20"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="63dp"
+        android:fontFamily="@font/dm_sans"
+        android:lineSpacingExtra="5.6sp"
+        android:textColor="#898a8d"
+        android:textSize="14sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="Filter by payment" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/id_cl_filter1"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="97dp"
+        android:background="#ccfcfcfc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/id_btn_filter1"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="29dp"
+            android:background="@drawable/filter_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="62dp"
+            android:fontFamily="@font/dm_sans"
+            android:lineSpacingExtra="5.6sp"
+            android:text="All transactions"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/id_cl_filter2"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#ccfcfcfc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/id_cl_filter1">
+        <ImageView
+            android:id="@+id/id_btn_filter2"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="29dp"
+            android:background="@drawable/filter_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="62dp"
+            android:fontFamily="@font/dm_sans"
+            android:lineSpacingExtra="5.6sp"
+            android:text="Money in"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/id_cl_filter3"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#ccfcfcfc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/id_cl_filter2">
+        <ImageView
+            android:id="@+id/id_btn_filter3"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="29dp"
+            android:background="@drawable/filter_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="62dp"
+            android:fontFamily="@font/dm_sans"
+            android:lineSpacingExtra="5.6sp"
+            android:text="Money out"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="256dp"
+        android:fontFamily="@font/dm_sans"
+        android:lineSpacingExtra="5.6sp"
+        android:text="Filter by date"
+        android:textColor="#898a8d"
+        android:textSize="14sp"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/id_cl_filter4"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="290dp"
+        android:background="#ccfcfcfc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/id_btn_filter4"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="29dp"
+            android:background="@drawable/filter_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="62dp"
+            android:fontFamily="@font/dm_sans"
+            android:lineSpacingExtra="5.6sp"
+            android:text="All transactions"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/id_cl_filter5"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#ccfcfcfc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/id_cl_filter4">
+        <ImageView
+            android:id="@+id/id_btn_filter5"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="29dp"
+            android:background="@drawable/filter_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="62dp"
+            android:fontFamily="@font/dm_sans"
+            android:lineSpacingExtra="5.6sp"
+            android:text="Last month"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/id_cl_filter6"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#ccfcfcfc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/id_cl_filter5">
+        <ImageView
+            android:id="@+id/id_btn_filter6"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="29dp"
+            android:background="@drawable/filter_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="62dp"
+            android:fontFamily="@font/dm_sans"
+            android:lineSpacingExtra="5.6sp"
+            android:text="Past 60 days"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/id_cl_filter7"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#ccfcfcfc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/id_cl_filter6">
+        <ImageView
+            android:id="@+id/id_btn_filter7"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="29dp"
+            android:background="@drawable/filter_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="62dp"
+            android:fontFamily="@font/dm_sans"
+            android:lineSpacingExtra="5.6sp"
+            android:text="Past 90 days"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -128,4 +128,18 @@
         app:layout_constraintTop_toTopOf="@+id/view26"
         android:text="1234 5678 0000" />
 
+    <TextView
+        android:id="@+id/id_extra_money"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/dm_sans"
+        android:gravity="center_horizontal"
+        android:lineSpacingExtra="5.6sp"
+        android:text="+ $ 10"
+        android:textColor="#c9252d"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/id_iv_activitiesDetail_amount"
+        app:layout_constraintStart_toEndOf="@+id/id_iv_activitiesDetail_amount" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

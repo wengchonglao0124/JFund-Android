@@ -24,6 +24,7 @@ public class ActivitiesDetail extends AppCompatActivity {
         initImage();
         initName();
         initAmount();
+        initExtra();
     }
 
     Button back;
@@ -53,6 +54,17 @@ public class ActivitiesDetail extends AppCompatActivity {
     private void initAmount() {
         amount = (TextView) findViewById(R.id.id_iv_activitiesDetail_amount);
         amount.setText(getIntent().getStringExtra("amount"));
+    }
+
+    TextView extra;
+    private void initExtra() {
+        extra = (TextView) findViewById(R.id.id_extra_money);
+        String money = getIntent().getStringExtra("extra");
+        if(money==null){
+            extra.setVisibility(View.GONE);
+        }else{
+            extra.setText(getIntent().getStringExtra("extra"));
+        }
     }
 
     private int getImageId(String imageName){

@@ -13,9 +13,11 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 
 import com.example.jacaranda.Modle.RecentActivity;
+import com.example.jacaranda.MyView.RotateTextView;
 import com.example.jacaranda.R;
 
 import java.util.List;
+import java.util.Locale;
 
 public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
     private int resource_parent;
@@ -29,9 +31,9 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
         this.list = objects;
     }
 
+    View view;
     @RequiresApi(api = Build.VERSION_CODES.N)
     public View getView(int position, View coverView, ViewGroup parent){
-        View view;
         RecentActivity activity = (RecentActivity) getItem(position);
         if(position == 0){
             view=LayoutInflater.from(getContext()).inflate(this.resource_child, parent, false);
@@ -40,6 +42,7 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
             TextView dateString = (TextView) view.findViewById(R.id.id_activity_date);
             TextView amount = (TextView) view.findViewById(R.id.id_activity_amount);
             TextView group = (TextView) view.findViewById(R.id.id_tv_group);
+            RotateTextView extra = (RotateTextView) view.findViewById(R.id.id_extra_money);
             imageName.setImageResource(getImageId(activity.getImageName()));
             name.setText(activity.getName());
             dateString.setText(activity.getDay() + " " + activity.getMonth());
@@ -50,6 +53,11 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
                 amount.setTextColor(Color.parseColor("#25c26e"));
             }else{
                 amount.setTextColor(Color.parseColor("#1e1e20"));
+            }
+            if(activity.getExtra() == null){
+                extra.setVisibility(View.GONE);
+            }else {
+                extra.setText(activity.getExtra());
             }
             return view;
         }
@@ -60,6 +68,7 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
             TextView name = (TextView) view.findViewById(R.id.id_activity_name);
             TextView dateString = (TextView) view.findViewById(R.id.id_activity_date);
             TextView amount = (TextView) view.findViewById(R.id.id_activity_amount);
+            RotateTextView extra = (RotateTextView) view.findViewById(R.id.id_extra_money);
             imageName.setImageResource(getImageId(activity.getImageName()));
             name.setText(activity.getName());
             dateString.setText(activity.getDay() + " " + activity.getMonth());
@@ -70,6 +79,11 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
             }else{
                 amount.setTextColor(Color.parseColor("#1e1e20"));
             }
+            if(activity.getExtra() == null){
+                extra.setVisibility(View.GONE);
+            }else {
+                extra.setText(activity.getExtra());
+            }
         }else{
             view=LayoutInflater.from(getContext()).inflate(this.resource_child, parent, false);
             ImageView imageName = (ImageView) view.findViewById(R.id.id_activity_image);
@@ -77,6 +91,7 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
             TextView dateString = (TextView) view.findViewById(R.id.id_activity_date);
             TextView amount = (TextView) view.findViewById(R.id.id_activity_amount);
             TextView group = (TextView) view.findViewById(R.id.id_tv_group);
+            RotateTextView extra = (RotateTextView) view.findViewById(R.id.id_extra_money);
             imageName.setImageResource(getImageId(activity.getImageName()));
             name.setText(activity.getName());
             dateString.setText(activity.getDay() + " " + activity.getMonth());
@@ -87,6 +102,11 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
                 amount.setTextColor(Color.parseColor("#25c26e"));
             }else{
                 amount.setTextColor(Color.parseColor("#1e1e20"));
+            }
+            if(activity.getExtra() == null){
+                extra.setVisibility(View.GONE);
+            }else {
+                extra.setText(activity.getExtra());
             }
         }
 
@@ -103,6 +123,32 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
                 return R.drawable.uber;
             case "apple":
                 return R.drawable.apple;
+            default:
+                return R.drawable.rounded_rectangle;
+        }
+    }
+
+    TextView letter;
+    private int getNameImage(String name){
+        letter = view.findViewById(R.id.id_activity_letter);
+        letter.setText(name.substring(0,1).toUpperCase());
+        switch (name.substring(0,1).toUpperCase()){
+            case "A":case "I": case "Q":case "Y":
+                return R.drawable.circle_case1;
+            case  "B":case "J":case "R":case "Z":
+                return R.drawable.circle_case2;
+            case "C":case "K":case "S":
+                return R.drawable.circle_case3;
+            case "D":case "L":case "T":
+                return R.drawable.circle_case4;
+            case "E":case "M":case "U":
+                return R.drawable.circle_case5;
+            case "F":case "N":case "V":
+                return R.drawable.circle_case6;
+            case "G":case "O":case "W":
+                return R.drawable.circle_case7;
+            case "H":case "P":case "X":
+                return R.drawable.circle_case8;
             default:
                 return R.drawable.rounded_rectangle;
         }

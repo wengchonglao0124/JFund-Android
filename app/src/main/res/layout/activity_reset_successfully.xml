@@ -35,7 +35,7 @@
         android:fontFamily="@font/dm_sans"
         android:gravity="center_horizontal"
         android:lineSpacingExtra="9.6sp"
-        android:text="Password reset sucessful!"
+        android:text="Password reset successful!"
         android:textColor="#1e1e1e"
         android:textSize="24sp"
         android:textStyle="normal"
