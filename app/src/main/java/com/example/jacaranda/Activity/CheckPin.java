@@ -1,5 +1,6 @@
 package com.example.jacaranda.Activity;
 
+
 import static com.example.jacaranda.Util.JsonToStringUtil.parseResponse;
 
 import androidx.annotation.NonNull;
@@ -10,11 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputFilter;
-import android.text.InputType;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -22,14 +21,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jacaranda.MyView.MyInputFilter;
-import com.example.jacaranda.MyView.XEditText;
+import com.example.jacaranda.HintPage.SuccessfullyTransferActivity;
+import com.example.jacaranda.MyView.PwdEditText;
 import com.example.jacaranda.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -39,33 +41,41 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class TransferActivity extends AppCompatActivity {
-    public static TransferActivity intance = null;
+
+
+
+public class CheckPin extends AppCompatActivity {
     private static final String BACKEND_URL = "https://xp.lycyy.cc";
-    private static final String PATH = "/checkID";
-    private static final String TAG = "TransferActivity";
+    private static final String PATH = "/checkTransferTo";
+    private static final String TAG = "CheckPin";
 
     private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        intance = this;
-        setContentView(R.layout.activity_transfer);
+        setContentView(R.layout.activity_check_pin);
         preferences = getSharedPreferences("config", Context.MODE_PRIVATE);
         initAll();
     }
 
     private void initAll() {
-        clickBack();
-        clickNext();
-        initIDBar();
-        clickHint();
+        initTitle();
+        initBack();
+        initPin();
+    }
+
+    TextView title;
+    String text;
+    private void initTitle() {
+        title = (TextView) findViewById(R.id.id_text_EnterPin);
+        text = this.getIntent().getStringExtra("name");
+        title.setText(text);
     }
 
     Button back;
-    private void clickBack() {
-        back = (Button) findViewById(R.id.id_btn_back1);
+    private void initBack() {
+        back = (Button) findViewById(R.id.id_btn_CheckPin_back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,80 +84,25 @@ public class TransferActivity extends AppCompatActivity {
         });
     }
 
-    private XEditText text;
-    private String IDNumber;
-    private String temp;
-    private void initIDBar() {
-        text = (XEditText) findViewById(R.id.id_user_ID);
-        text.setRawInputType(InputType.TYPE_CLASS_NUMBER);
-        InputFilter[] filters = new InputFilter[1];
-        filters[0] = new MyInputFilter(" 0123456789");
-        text.setFilters(filters);
-        text.addTextChangedListener(new TextWatcher() {
+    PwdEditText pin;
+    private void initPin() {
+        pin = (PwdEditText) findViewById(R.id.id_et_Pin);
+        pin.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-               if(s.toString().length() == 19){
-                   next.setBackgroundResource(R.drawable.next_button1);
-                   next.setEnabled(true);
-               }else{
-                   next.setBackgroundResource(R.drawable.next_button);
-                   next.setEnabled(false);
-               }
-
-                if(s.length() > 0){
-                    temp = s.toString();
-                    temp = temp.replace("  "," ");
-                    if(temp.substring(temp.length() - 1).equals(" ") && temp.length()%5!= 0){
-                        temp = temp.trim();
-                    }
+                if(s.length() == 6){
+                    checkPin();
                 }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                IDNumber = s.toString();
-                if (!TextUtils.isEmpty(text.getText().toString()) && !text.getText().toString().equals(temp)){
-                    text.setText(temp);
-                }
-            }
-        });
-    }
 
-    Button next;
-    private void clickNext() {
-        next = (Button) findViewById(R.id.id_btn_next1);
-        next.setEnabled(false);
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkID();
-//                Intent i = new Intent(TransferActivity.this, TransferActivity2.class);
-//                i.putExtra("ID",IDNumber);
-//                startActivity(i);
-            }
-        });
-    }
-
-    Button hint;
-    TextView textView;
-    private void clickHint() {
-        hint = (Button) findViewById(R.id.id_btn_hint);
-        textView  = (TextView) findViewById(R.id.id_tv_hint);
-        hint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(hint.isSelected() == false){
-                    textView.setText("User ID should contain 16 digits");
-                    textView.setHeight(100);
-                    hint.setSelected(true);
-                }else{
-                    textView.setText("");
-                    textView.setHeight(0);
-                    hint.setSelected(false);
-                }
             }
         });
     }
@@ -155,29 +110,29 @@ public class TransferActivity extends AppCompatActivity {
     private JSONObject parseInfo(){
         try {
             //parse values in textbox and transfer to json
-            JSONObject userInfo = new JSONObject();
-            userInfo.put("UserID", IDNumber.replace(" ",""));
-            Log.i(TAG, userInfo.toString());
-            return userInfo;
+            JSONObject transferInfo = new JSONObject();
+            transferInfo.put("pin", Objects.requireNonNull(pin.getText()).toString());
+            transferInfo.put("fid", getIntent().getStringExtra("fid"));
+            Log.i(TAG, transferInfo.toString());
+            return transferInfo;
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-
-    private void checkID(){
+    private void checkPin(){
         new Thread(){
             @Override
             public void run() {
 
-                JSONObject userInfo = parseInfo();
-                if (userInfo == null){
+                JSONObject transferInfo = parseInfo();
+                if (transferInfo == null){
                     showAlert("Error", "Error collecting user information");
                 }else{
                     //setup RequestBody
                     final RequestBody requestBody = RequestBody.create(
-                            userInfo.toString(),
+                            transferInfo.toString(),
                             MediaType.get("application/json; charset=utf-8")
                     );
 
@@ -211,23 +166,30 @@ public class TransferActivity extends AppCompatActivity {
                                             final JSONObject responseJson = parseResponse(response.body());
                                             Log.i(TAG, responseJson.toString());
 
-                                            String code, message, data;
+                                            String code;
                                             code = responseJson.optString("code");
-                                            message = responseJson.optString("msg");
-                                            data = responseJson.optString("data");
 
-                                            if (code.equals("200")){
-                                                String username;
-                                                final JSONObject responseBody = new JSONObject(data);
-                                                username = responseBody.optString("UserName");
 
-                                                Intent i = new Intent(TransferActivity.this, TransferActivity2.class);
-                                                i.putExtra("ID",IDNumber);
-                                                i.putExtra("username",username);
-                                                startActivity(i);
-                                            }else{
-                                                showToast("Error! code:" + code);
-                                            }
+                                            Timer timer = new Timer();
+                                            TimerTask timerTask = new TimerTask() {
+                                                @Override
+                                                public void run() {
+//                                                    progressBar.setVisibility(View.INVISIBLE);
+                                                    if (code.equals("200")){
+                                                        Intent intent = new Intent(CheckPin.this, SuccessfullyTransferActivity.class);
+                                                        intent.putExtra("amount", getIntent().getStringExtra("amount"));
+                                                        Log.i(TAG, getIntent().getStringExtra("username"));
+                                                        intent.putExtra("username", getIntent().getStringExtra("username"));
+                                                        startActivity(intent);
+                                                        finish();
+                                                    }else{
+                                                        showToast("Error! code:" + code);
+                                                    }
+                                                }
+                                            };
+                                            timer.schedule(timerTask,1000);
+
+
                                         }catch (IOException | JSONException e) {
                                             Log.e(TAG, "Error parsing response", e);
                                         }
@@ -239,8 +201,6 @@ public class TransferActivity extends AppCompatActivity {
             }
         }.start();
     }
-
-
 
     private void showAlert(String title, @Nullable String message) {
         runOnUiThread(() -> {

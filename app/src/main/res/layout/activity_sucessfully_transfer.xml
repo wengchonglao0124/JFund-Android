@@ -49,7 +49,7 @@
         app:layout_constraintTop_toBottomOf="@+id/id_tv_tranferSuccessfully_hint" />
 
     <TextView
-        android:id="@+id/textView19"
+        android:id="@+id/id_tv_tranferSuccessfully_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="17dp"
@@ -71,6 +71,6 @@
         android:background="@drawable/done_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView19" />
+        app:layout_constraintTop_toBottomOf="@+id/id_tv_tranferSuccessfully_name" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

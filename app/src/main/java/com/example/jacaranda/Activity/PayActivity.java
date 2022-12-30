@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.example.jacaranda.HintPage.SuccessfullyPay;
 import com.example.jacaranda.HintPage.SuccessfullyTransferActivity;
 import com.example.jacaranda.R;
+import com.example.jacaranda.Service.WebSocketService;
 
 public class PayActivity extends AppCompatActivity {
 
@@ -150,5 +152,30 @@ public class PayActivity extends AppCompatActivity {
         WindowManager.LayoutParams layoutParams = this.getWindow().getAttributes();
         layoutParams.alpha = f;
         this.getWindow().setAttributes(layoutParams);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startService();
+    }
+
+    private void startService(){
+        Intent intent1 = new Intent(PayActivity.this, WebSocketService.class);
+        stopService(intent1);
+        Log.e("TAG", "stop----");
+        Intent intent2 = new Intent(PayActivity.this, WebSocketService.class);
+        startService(intent2);
+    }
+
+    private void stopService(){
+        Intent intent1 = new Intent(PayActivity.this, WebSocketService.class);
+        stopService(intent1);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopService();
     }
 }

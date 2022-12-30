@@ -1,15 +1,20 @@
 package com.example.jacaranda.Fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.RenderEffect;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +22,17 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.example.jacaranda.Activity.ActivitiesDetail;
 import com.example.jacaranda.Activity.RestaurantDetail;
 import com.example.jacaranda.Activity.TopUpBalance;
 import com.example.jacaranda.Adapter.RecentActivityAdapter;
 import com.example.jacaranda.Adapter.FragmentPagerAdapter;
+import com.example.jacaranda.JacarandaApplication;
+import com.example.jacaranda.Modle.Activity;
 import com.example.jacaranda.Modle.RecentActivity;
 import com.example.jacaranda.MyView.NoScrollListView;
 import com.example.jacaranda.Activity.NotificationActivity;
@@ -37,17 +47,49 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class HomeFragment extends Fragment {
     View RootView;
     List<RecentActivity> activityList = new ArrayList<>();
     private ViewPager2 ViewPager;
     private TabLayout tabLayout;
+
+    private final String TAG = "HomeFragment";
+    private static final String BACKEND_URL = "https://xp.lycyy.cc";
+    private JacarandaApplication app;
+    private SharedPreferences preferences;
+    private static final String PATH_BEFORE = "/bill_before";
+    private static final String PATH_AFTER = "/bill";
+
+    private Date lastUpdateTime;
+
+    private int currentView = R.layout.home_activitiy_part_case1;
+
+    private boolean recentViewCreated = false;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -58,9 +100,18 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
+
+
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+
+        preferences = requireActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+        app = (JacarandaApplication) getActivity().getApplication();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -73,6 +124,7 @@ public class HomeFragment extends Fragment {
             initRecentActivity();
             initBusinessPartner();
             initClick();
+            updateUserID(preferences.getString("userID", "0000000000000000"));
         }
         return RootView;
     }
@@ -251,5 +303,307 @@ public class HomeFragment extends Fragment {
                 startActivity(i);
             }
         });
+    }
+
+
+    private JSONObject parseResponse(ResponseBody responseBody) {
+        if (responseBody != null) {
+            try {
+                return new JSONObject(responseBody.string());
+            } catch (IOException | JSONException e) {
+                Log.e(TAG, "Error parsing response", e);
+            }
+        }
+
+        return new JSONObject();
+    }
+
+    private void getBalance(){
+
+        //setup RequestBody
+        final RequestBody requestBody = RequestBody.create(
+                "",
+                MediaType.get("application/json; charset=utf-8")
+        );
+
+        Request request = new Request.Builder()
+                .url(BACKEND_URL + "/balanceOf")
+                .post(requestBody)
+                .addHeader("token", preferences.getString("AccessToken", null))
+                .build();
+
+
+        new OkHttpClient()
+                .newCall(request)
+                .enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    }
+
+                    @Override
+                    public void onResponse(
+                            @NonNull Call call,
+                            @NonNull Response response
+                    ) throws IOException {
+                        if (!response.isSuccessful()) {
+                        } else {
+                            final JSONObject responseJson = parseResponse(response.body());
+                            Log.i(TAG, responseJson.toString());
+
+                            String code, message, data;
+                            code = responseJson.optString("code");
+                            message = responseJson.optString("msg");
+                            data = responseJson.optString("data");
+                            data = data.replace("\\\"", "'");
+
+                            Log.i(TAG, data);
+
+                            String balance = "UNKNOWN";
+
+                            if (code.equals("200")){
+                                try {
+                                    balance = new JSONObject(data).optString("balanceof");
+                                    Log.i(TAG, balance);
+                                    if (balance.equals("null")){
+                                        balance = "0.00";
+                                    }
+                                    updateBalance(balance);
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }else{
+                                Log.i(TAG, message);
+                                updateBalance(balance);
+                            }
+
+                        }
+                    }
+                });
+    }
+
+    private void updateUserID(String userID){
+        TextView userId = RootView.findViewById(R.id.id_balance_userid);
+        String userIDString = "";
+        char[] characters = userID.toCharArray();
+        for (int i=0; i<userID.length(); i++){
+            if ((i%4) == 0){
+                userIDString += " ";
+            }
+            userIDString += characters[i];
+        }
+        userId.setText(userIDString);
+    }
+
+    private void updateBalance(String balance){
+        getActivity().runOnUiThread(() -> {
+            TextView tx_balance = RootView.findViewById(R.id.id_balance_balance);
+            Log.i(TAG, balance);
+            tx_balance.setText(balance);
+        });
+    }
+
+
+    private void getActivitiesBefore(String timestamp){
+        new Thread(){
+            @Override
+            public void run() {
+
+                //parse values in textbox and transfer to json
+                JSONObject time = new JSONObject();
+
+                try {
+                    time.put("time", timestamp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.i(TAG, time.toString());
+                //setup RequestBody
+                final RequestBody requestBody = RequestBody.create(
+                        time.toString(),
+                        MediaType.get("application/json; charset=utf-8")
+                );
+
+                Request request = new Request.Builder()
+                        .url(app.getURL() + PATH_BEFORE)
+                        .addHeader("token",preferences.getString("AccessToken", null))
+                        .post(requestBody)
+                        .build();
+
+                new OkHttpClient()
+                        .newCall(request)
+                        .enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                showAlert("Failed to load data", "Error: " + e.toString());
+                            }
+
+                            @RequiresApi(api = Build.VERSION_CODES.N)
+                            @Override
+                            public void onResponse(
+                                    @NonNull Call call,
+                                    @NonNull Response response
+                            ) throws IOException {
+                                if (!response.isSuccessful()) {
+                                    showAlert(
+                                            "Failed to load page",
+                                            "Error: " + response.toString()
+                                    );
+                                } else {
+                                    final JSONObject responseJson = parseResponse(response.body());
+                                    Log.i(TAG, responseJson.toString());
+
+                                    String code, message, data;
+                                    code = responseJson.optString("code");
+                                    message = responseJson.optString("msg");
+                                    data = responseJson.optString("data");
+                                    Log.i(TAG, data);
+
+                                    //判断是否成功
+                                    if (code.equals("200")) {
+//                                            showToast("Records retrieved");
+                                        List<Activity> activities = JSON.parseArray(data, Activity.class);
+                                        Log.i(TAG, activities.toString());
+                                        if (!activities.isEmpty()){
+                                        }
+
+                                    }else{
+                                        showToast(message);
+                                    }
+
+                                }
+                            }
+                        });
+
+            }
+        }.start();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void initActivityAndMore(){
+        initRecentActivity();
+        initBusinessPartner();
+        initClick();
+    }
+
+    private void getActivitiesAfter(String timestamp){
+        new Thread(){
+            @Override
+            public void run() {
+
+                //parse values in textbox and transfer to json
+                JSONObject time = new JSONObject();
+
+                try {
+                    time.put("time", timestamp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.i(TAG, time.toString());
+                //setup RequestBody
+                final RequestBody requestBody = RequestBody.create(
+                        time.toString(),
+                        MediaType.get("application/json; charset=utf-8")
+                );
+
+                Request request = new Request.Builder()
+                        .url(app.getURL() + PATH_AFTER)
+                        .addHeader("token",preferences.getString("AccessToken", null))
+                        .post(requestBody)
+                        .build();
+
+                new OkHttpClient()
+                        .newCall(request)
+                        .enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                showAlert("Failed to load data", "Error: " + e.toString());
+                            }
+
+                            @RequiresApi(api = Build.VERSION_CODES.N)
+                            @Override
+                            public void onResponse(
+                                    @NonNull Call call,
+                                    @NonNull Response response
+                            ) throws IOException {
+                                if (!response.isSuccessful()) {
+                                    showAlert(
+                                            "Failed to load page",
+                                            "Error: " + response.toString()
+                                    );
+                                } else {
+                                    final JSONObject responseJson = parseResponse(response.body());
+                                    Log.i(TAG, responseJson.toString());
+
+                                    String code, message, data;
+                                    code = responseJson.optString("code");
+                                    message = responseJson.optString("msg");
+                                    data = responseJson.optString("data");
+                                    Log.i(TAG, data);
+
+                                    //判断是否成功
+                                    if (code.equals("200")) {
+//                                            showToast("Records retrieved");
+                                        List<Activity> activities = JSON.parseArray(data, Activity.class);
+                                        Log.i(TAG, activities.toString());
+                                        if (!activities.isEmpty()){
+
+                                        }
+
+                                    }else{
+                                        showToast(message);
+                                    }
+
+                                }
+                            }
+                        });
+
+            }
+        }.start();
+    }
+
+    private void showAlert(String title, @Nullable String message) {
+        getActivity().runOnUiThread(() -> {
+            AlertDialog dialog = new AlertDialog.Builder(getContext())
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Ok", null)
+                    .create();
+            dialog.show();
+        });
+    }
+
+    private void showToast(String message) {
+        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void updateUI(){
+        getBalance();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.i(TAG,"ONSTART");
+//        initActivitiesData();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
+    private int oldLen = 0;
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onStop() {
+        Log.i(TAG,"onStop");
+        super.onStop();
     }
 }
