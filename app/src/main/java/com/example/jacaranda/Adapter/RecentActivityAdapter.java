@@ -37,7 +37,7 @@ public class RecentActivityAdapter extends ArrayAdapter {
         TextView amount = (TextView) view.findViewById(R.id.id_activity_amount);
         RotateTextView extra = (RotateTextView) view.findViewById(R.id.id_extra_money);
 
-        imageName.setImageResource(getImageId(activity.getImageName()));
+        imageName.setImageResource(getNameImage(activity.getImageName()));
         name.setText(activity.getName());
         dateString.setText(activity.getDay() + " " + activity.getMonth());
         amount.setText(activity.getBalance());
