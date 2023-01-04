@@ -5,6 +5,12 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.jacaranda.R;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class RecentActivity {
     private String imageName;
@@ -198,7 +204,7 @@ public class RecentActivity {
         if (this.type.equals("topUp")){
             Double extraAmount = Math.floor(amount/10);
             if (!(extraAmount < 10)){
-                this.extra = String.valueOf(extraAmount);
+                this.extra = "+" + extraAmount;
             }
         }
     }
@@ -241,6 +247,54 @@ public class RecentActivity {
 
     public void setProfilePic(String profilePic) {
         this.profilePic = profilePic;
+    }
+
+    public String getWeekDay() throws ParseException {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        Calendar c = Calendar.getInstance();
+        c.setTime(df.parse(dateTime));
+        switch (c.get(Calendar.DAY_OF_WEEK)){
+            case 1:
+                return "Mon";
+            case  2:
+                return "Tue";
+            case 3:
+                return "Wed";
+            case 4:
+                return "Thu";
+            case 5:
+                return "Fri";
+            case 6:
+                return "Sat";
+            case 7:
+                return "Sun";
+            default:
+                return "";
+        }
+    }
+
+    public String getDetailTime() throws ParseException {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        Calendar c = Calendar.getInstance();
+        c.setTime(df.parse(dateTime));
+        String weekDay = "";
+        switch (c.get(Calendar.DAY_OF_WEEK)){
+            case 1:
+                weekDay = "Mon ,";
+            case 2:
+                weekDay = "Tue ,";
+            case 3:
+                weekDay = "Wed ,";
+            case 4:
+                weekDay = "Thu ,";
+            case 5:
+                weekDay = "Fri ,";
+            case 6:
+                weekDay = "Sat ,";
+            case 7:
+                weekDay = "Sun ,";
+        }
+        return weekDay + dateTime.replace(" ", "\n") + " (AEST/AEDT)";
     }
 
     @Override

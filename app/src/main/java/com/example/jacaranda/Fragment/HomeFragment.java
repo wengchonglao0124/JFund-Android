@@ -166,14 +166,22 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
-                    intent.putExtra("image", activityList.get(position).getImageName());
-                    intent.putExtra("name", activityList.get(position).getName());
-                    intent.putExtra("amount", activityList.get(position).getBalance());
-                    intent.putExtra("extra", activityList.get(position).getExtra());
+                    RecentActivity activity = activityList.get(position);
+                    intent.putExtra("image", activity.getImageName());
+                    intent.putExtra("name", activity.getName());
+                    intent.putExtra("amount", activity.getBalance());
+                    intent.putExtra("extra", activity.getExtra());
+                    try {
+                        intent.putExtra("time", activity.getDetailTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    intent.putExtra("receipt", activity.getReceipt());
                     startActivity(intent);
                 }
             });
         }else if(activityList.size() > 3){
+            activityList = activityList.subList(0,3);
             currentView = R.layout.home_activity_part_case3;
             view = inflater.inflate(R.layout.home_activity_part_case3,null);
             recentActivity.addView(view);
@@ -187,10 +195,17 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
-                    intent.putExtra("image", activityList.get(position).getImageName());
-                    intent.putExtra("name", activityList.get(position).getName());
-                    intent.putExtra("amount", activityList.get(position).getBalance());
-                    intent.putExtra("extra", activityList.get(position).getExtra());
+                    RecentActivity activity = activityList.get(position);
+                    intent.putExtra("image", activity.getImageName());
+                    intent.putExtra("name", activity.getName());
+                    intent.putExtra("amount", activity.getBalance());
+                    intent.putExtra("extra", activity.getExtra());
+                    try {
+                        intent.putExtra("time", activity.getDetailTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    intent.putExtra("receipt", activity.getReceipt());
                     startActivity(intent);
                 }
             });
@@ -673,9 +688,17 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
-                    intent.putExtra("image", activityList.get(position).getImageName());
-                    intent.putExtra("name", activityList.get(position).getName());
-                    intent.putExtra("amount", activityList.get(position).getBalance());
+                    RecentActivity activity = activityList.get(position);
+                    intent.putExtra("image", activity.getImageName());
+                    intent.putExtra("name", activity.getName());
+                    intent.putExtra("amount", activity.getBalance());
+                    intent.putExtra("extra", activity.getExtra());
+                    try {
+                        intent.putExtra("time", activity.getDetailTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    intent.putExtra("receipt", activity.getReceipt());
                     startActivity(intent);
                 }
             });
@@ -707,9 +730,17 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
-                        intent.putExtra("image", activityList.get(position).getImageName());
-                        intent.putExtra("name", activityList.get(position).getName());
-                        intent.putExtra("amount", activityList.get(position).getBalance());
+                        RecentActivity activity = activityList.get(position);
+                        intent.putExtra("image", activity.getImageName());
+                        intent.putExtra("name", activity.getName());
+                        intent.putExtra("amount", activity.getBalance());
+                        intent.putExtra("extra", activity.getExtra());
+                        try {
+                            intent.putExtra("time", activity.getDetailTime());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        intent.putExtra("receipt", activity.getReceipt());
                         startActivity(intent);
                     }
                 });

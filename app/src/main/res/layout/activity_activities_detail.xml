@@ -29,6 +29,21 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/id_activity_detail_letter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/dm_sans"
+        android:lineSpacingExtra="7.2sp"
+        android:text=""
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/id_iv_activitiesDetail_image"
+        app:layout_constraintEnd_toEndOf="@+id/id_iv_activitiesDetail_image"
+        app:layout_constraintStart_toStartOf="@+id/id_iv_activitiesDetail_image"
+        app:layout_constraintTop_toTopOf="@+id/id_iv_activitiesDetail_image" />
+
+    <TextView
         android:id="@+id/id_iv_activitiesDetail_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -87,6 +102,7 @@
         android:text="Transaction time" />
 
     <TextView
+        android:id="@+id/id_tv_activityDetail_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="247dp"
@@ -115,6 +131,7 @@
         android:text="Receipt number" />
 
     <TextView
+        android:id="@+id/id_tv_activityDetail_receipt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="247dp"

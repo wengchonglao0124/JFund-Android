@@ -43,7 +43,7 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
             TextView amount = (TextView) view.findViewById(R.id.id_activity_amount);
             TextView group = (TextView) view.findViewById(R.id.id_tv_group);
             RotateTextView extra = (RotateTextView) view.findViewById(R.id.id_extra_money);
-            imageName.setImageResource(getImageId(activity.getImageName()));
+            imageName.setImageResource(getNameColor(activity.getName(), activity.getImageName()));
             name.setText(activity.getName());
             dateString.setText(activity.getDay() + " " + activity.getMonth());
             amount.setText(activity.getBalance());
@@ -69,7 +69,7 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
             TextView dateString = (TextView) view.findViewById(R.id.id_activity_date);
             TextView amount = (TextView) view.findViewById(R.id.id_activity_amount);
             RotateTextView extra = (RotateTextView) view.findViewById(R.id.id_extra_money);
-            imageName.setImageResource(getImageId(activity.getImageName()));
+            imageName.setImageResource(getNameColor(activity.getName(), activity.getImageName()));
             name.setText(activity.getName());
             dateString.setText(activity.getDay() + " " + activity.getMonth());
             amount.setText(activity.getBalance());
@@ -92,7 +92,7 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
             TextView amount = (TextView) view.findViewById(R.id.id_activity_amount);
             TextView group = (TextView) view.findViewById(R.id.id_tv_group);
             RotateTextView extra = (RotateTextView) view.findViewById(R.id.id_extra_money);
-            imageName.setImageResource(getImageId(activity.getImageName()));
+            imageName.setImageResource(getNameColor(activity.getName(), activity.getImageName()));
             name.setText(activity.getName());
             dateString.setText(activity.getDay() + " " + activity.getMonth());
             amount.setText(activity.getBalance());
@@ -151,6 +151,32 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
                 return R.drawable.circle_case8;
             default:
                 return R.drawable.rounded_rectangle;
+        }
+    }
+
+    private int getNameColor(String name, String color){
+        letter = view.findViewById(R.id.id_activity_letter);
+        letter.setText(name.substring(0,1).toUpperCase());
+        switch (color){
+            case "#cdb4db":
+                return R.drawable.circle_case1;
+            case  "#ffafcc":
+                return R.drawable.circle_case2;
+            case "#ffcaca":
+                return R.drawable.circle_case3;
+            case "#fb6f92":
+                return R.drawable.circle_case4;
+            case "#449dd1":
+                return R.drawable.circle_case5;
+            case "#bccef8":
+                return R.drawable.circle_case6;
+            case "#a2d2ff":
+                return R.drawable.circle_case7;
+            case "#74c69d":
+                return R.drawable.circle_case8;
+            default:
+                letter.setText("");
+                return R.drawable.payoneer;
         }
     }
 }

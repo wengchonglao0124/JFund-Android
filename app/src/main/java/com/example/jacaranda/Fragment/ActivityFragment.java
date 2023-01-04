@@ -1,16 +1,24 @@
 package com.example.jacaranda.Fragment;
 
+import static com.example.jacaranda.Util.JsonToStringUtil.parseResponse;
+
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +31,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.example.jacaranda.Activity.ActivitiesDetail;
 import com.example.jacaranda.Adapter.ActivitiesAdapter;
+import com.example.jacaranda.Database.LoginDBHelper;
+import com.example.jacaranda.JacarandaApplication;
+import com.example.jacaranda.Modle.Activity;
 import com.example.jacaranda.Modle.RecentActivity;
 import com.example.jacaranda.MyView.NoScrollListView;
 import com.example.jacaranda.R;
@@ -35,11 +48,29 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class ActivityFragment extends Fragment {
     View RootView;
@@ -49,6 +80,18 @@ public class ActivityFragment extends Fragment {
     LinearLayout Activities;
     ActivitiesAdapter adapter;
     NoScrollListView listView;
+
+    private JacarandaApplication app;
+
+    private static final String TAG = "ActivityFragment";
+
+    private static final String PATH_BEFORE = "/bill_before";
+    private static final String PATH_AFTER = "/bill";
+
+    private SharedPreferences preferences;
+
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
 
     public ActivityFragment() {
         // Required empty public constructor
@@ -62,6 +105,8 @@ public class ActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        app = (JacarandaApplication)getActivity().getApplication();
+        preferences = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
     }
 
 
@@ -78,12 +123,13 @@ public class ActivityFragment extends Fragment {
         return RootView;
     }
 
+    Button button;
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void initActivities() {
-        initActivitiesData();
+//        initActivitiesData();
         Activities = RootView.findViewById(R.id.id_ll_activities);
         LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.all_activities, null);
+        View view = inflater.inflate(R.layout.all_activities_more, null);
         Activities.addView(view);
         listView = (NoScrollListView) RootView.findViewById(R.id.id_activities);
         listView.setTextFilterEnabled(true);
@@ -94,11 +140,26 @@ public class ActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
-                intent.putExtra("image", activityList.get(position).getImageName());
-                intent.putExtra("name", activityList.get(position).getName());
-                intent.putExtra("amount", activityList.get(position).getBalance());
-                intent.putExtra("extra", activityList.get(position).getExtra());
+                RecentActivity activity = activityList.get(position);
+                intent.putExtra("image", activity.getImageName());
+                intent.putExtra("name", activity.getName());
+                intent.putExtra("amount", activity.getBalance());
+                intent.putExtra("extra", activity.getExtra());
+                try {
+                    intent.putExtra("time", activity.getDetailTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                intent.putExtra("receipt", activity.getReceipt());
                 startActivity(intent);
+            }
+        });
+
+        button = RootView.findViewById(R.id.id_activityFrag_btn_showMore);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMore();
             }
         });
     }
@@ -137,10 +198,17 @@ public class ActivityFragment extends Fragment {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
-                            intent.putExtra("image", activityList.get(position).getImageName());
-                            intent.putExtra("name", activityList.get(position).getName());
-                            intent.putExtra("amount", activityList.get(position).getBalance());
-                            intent.putExtra("extra", activityList.get(position).getExtra());
+                            RecentActivity activity = activityList.get(position);
+                            intent.putExtra("image", activity.getImageName());
+                            intent.putExtra("name", activity.getName());
+                            intent.putExtra("amount", activity.getBalance());
+                            intent.putExtra("extra", activity.getExtra());
+                            try {
+                                intent.putExtra("time", activity.getDetailTime());
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            intent.putExtra("receipt", activity.getReceipt());
                             startActivity(intent);
                         }
                     });
@@ -158,10 +226,17 @@ public class ActivityFragment extends Fragment {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
-                            intent.putExtra("image", activitySearched.get(position).getImageName());
-                            intent.putExtra("name", activitySearched.get(position).getName());
-                            intent.putExtra("amount", activitySearched.get(position).getBalance());
-                            intent.putExtra("extra", activityList.get(position).getExtra());
+                            RecentActivity activity = activitySearched.get(position);
+                            intent.putExtra("image", activity.getImageName());
+                            intent.putExtra("name", activity.getName());
+                            intent.putExtra("amount", activity.getBalance());
+                            intent.putExtra("extra", activity.getExtra());
+                            try {
+                                intent.putExtra("time", activity.getDetailTime());
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            intent.putExtra("receipt", activity.getReceipt());
                             startActivity(intent);
                         }
                     });
@@ -389,19 +464,316 @@ public class ActivityFragment extends Fragment {
                 }
             }
         }
-        ActivitiesAdapter adapterNew = new ActivitiesAdapter(getActivity(),
+        adapter = new ActivitiesAdapter(getActivity(),
                 R.layout.home_activity_part_listview, R.layout.all_activities_listview, activityTemp1);
-        listView.setAdapter(adapterNew);
+        listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
-                intent.putExtra("image", activityTemp1.get(position).getImageName());
-                intent.putExtra("name", activityTemp1.get(position).getName());
-                intent.putExtra("amount", activityTemp1.get(position).getBalance());
-                intent.putExtra("extra", activityTemp1.get(position).getExtra());
+                RecentActivity activity = activityTemp1.get(position);
+                intent.putExtra("image", activity.getImageName());
+                intent.putExtra("name", activity.getName());
+                intent.putExtra("amount", activity.getBalance());
+                intent.putExtra("extra", activity.getExtra());
+                try {
+                    intent.putExtra("time", activity.getDetailTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                intent.putExtra("receipt", activity.getReceipt());
                 startActivity(intent);
             }
         });
+    }
+
+    private void getActivitiesBefore(String timestamp){
+        new Thread(){
+            @Override
+            public void run() {
+
+                //parse values in textbox and transfer to json
+                JSONObject time = new JSONObject();
+
+                try {
+                    time.put("time", timestamp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.i(TAG, time.toString());
+                //setup RequestBody
+                final RequestBody requestBody = RequestBody.create(
+                        time.toString(),
+                        MediaType.get("application/json; charset=utf-8")
+                );
+
+                Request request = new Request.Builder()
+                        .url(app.getURL() + PATH_BEFORE)
+                        .addHeader("token",preferences.getString("AccessToken", null))
+                        .post(requestBody)
+                        .build();
+
+                new OkHttpClient()
+                        .newCall(request)
+                        .enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                showAlert("Failed to load data", "Error: " + e.toString());
+                            }
+
+                            @RequiresApi(api = Build.VERSION_CODES.N)
+                            @Override
+                            public void onResponse(
+                                    @NonNull Call call,
+                                    @NonNull Response response
+                            ) throws IOException {
+                                if (!response.isSuccessful()) {
+                                    showAlert(
+                                            "Failed to load page",
+                                            "Error: " + response.toString()
+                                    );
+                                } else {
+                                    final JSONObject responseJson = parseResponse(response.body());
+                                    Log.i(TAG, responseJson.toString());
+
+                                    String code, message, data;
+                                    code = responseJson.optString("code");
+                                    message = responseJson.optString("msg");
+                                    data = responseJson.optString("data");
+                                    Log.i(TAG, data);
+
+                                    //判断是否成功
+                                    if (code.equals("200")) {
+//                                            showToast("Records retrieved");
+                                        List<Activity> activities = JSON.parseArray(data, Activity.class);
+                                        Log.i(TAG, activities.toString());
+                                        if (!activities.isEmpty()){
+                                            int len = activities.size();
+                                            Log.i(TAG, String.valueOf(activities.size()));
+                                            try {
+                                                List<RecentActivity> moreActivites = transferToRecentActivity(activities);
+                                                activityList.addAll(moreActivites);
+                                                activityBackup.addAll(moreActivites);
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                            getActivity().runOnUiThread(() -> filterData());
+                                            if (len < 10){
+                                                getActivity().runOnUiThread(ActivityFragment.this::updateView);
+                                            }
+                                        }
+                                    }else{
+                                        showToast(message);
+                                    }
+
+                                }
+                            }
+                        });
+
+            }
+        }.start();
+    }
+
+    private void updateView(){
+        Activities.removeAllViews();
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.all_activities, null);
+        Activities.addView(view);
+        listView = (NoScrollListView) RootView.findViewById(R.id.id_activities);
+        listView.setTextFilterEnabled(true);
+        adapter = new ActivitiesAdapter(this.getActivity(),
+                R.layout.home_activity_part_listview, R.layout.all_activities_listview, activityList);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
+                RecentActivity activity = activityList.get(position);
+                intent.putExtra("image", activity.getImageName());
+                intent.putExtra("name", activity.getName());
+                intent.putExtra("amount", activity.getBalance());
+                intent.putExtra("extra", activity.getExtra());
+                try {
+                    intent.putExtra("time", activity.getDetailTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                intent.putExtra("receipt", activity.getReceipt());
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void getActivitiesAfter(String timestamp){
+        new Thread(){
+            @Override
+            public void run() {
+
+                //parse values in textbox and transfer to json
+                JSONObject time = new JSONObject();
+
+                try {
+                    time.put("time", timestamp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.i(TAG, time.toString());
+                //setup RequestBody
+                final RequestBody requestBody = RequestBody.create(
+                        time.toString(),
+                        MediaType.get("application/json; charset=utf-8")
+                );
+
+                Request request = new Request.Builder()
+                        .url(app.getURL() + PATH_AFTER)
+                        .addHeader("token",preferences.getString("AccessToken", null))
+                        .post(requestBody)
+                        .build();
+
+                new OkHttpClient()
+                        .newCall(request)
+                        .enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                showAlert("Failed to load data", "Error: " + e.toString());
+                            }
+
+                            @RequiresApi(api = Build.VERSION_CODES.N)
+                            @Override
+                            public void onResponse(
+                                    @NonNull Call call,
+                                    @NonNull Response response
+                            ) throws IOException {
+                                if (!response.isSuccessful()) {
+                                    showAlert(
+                                            "Failed to load page",
+                                            "Error: " + response.toString()
+                                    );
+                                } else {
+                                    final JSONObject responseJson = parseResponse(response.body());
+                                    Log.i(TAG, responseJson.toString());
+
+                                    String code, message, data;
+                                    code = responseJson.optString("code");
+                                    message = responseJson.optString("msg");
+                                    data = responseJson.optString("data");
+                                    Log.i(TAG, data);
+
+                                    //判断是否成功
+                                    if (code.equals("200")) {
+//                                            showToast("Records retrieved");
+                                        List<Activity> activities = JSON.parseArray(data, Activity.class);
+                                        Log.i(TAG, activities.toString());
+                                        if (!activities.isEmpty()){
+                                            try {
+                                                activityList.addAll(0, transferToRecentActivity(activities));
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
+
+                                    }else{
+                                        showToast(message);
+                                    }
+
+                                }
+                            }
+                        });
+
+            }
+        }.start();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private List<RecentActivity> transferToRecentActivity(List<Activity> activities) throws ParseException {
+
+        List<RecentActivity> recentActivities = new ArrayList<>();
+
+        String payUser, receiveUser, dateTime, id;
+        id = preferences.getString("userID", null);
+        for (Activity activity: activities){
+            RecentActivity recentActivity = new RecentActivity();
+
+            recentActivity.setReceipt(activity.getReceipt());
+
+            receiveUser = activity.getReceiveUser();
+            payUser = activity.getPayUser();
+
+            if (receiveUser.equals(id)){
+                if (payUser.equals(id)){
+                    recentActivity.setName("topUp");
+                    recentActivity.setType("topUp");
+                    recentActivity.setImageName("topUp");
+                }else{
+                    recentActivity.setName(activity.getPayUsername());
+                    recentActivity.setType("receive");
+                    recentActivity.setImageName(activity.getPayColor());
+                }
+                recentActivity.setAmount(activity.getAmount());
+            }else {
+                recentActivity.setName(activity.getReceiveUsername());
+                recentActivity.setType("pay");
+                recentActivity.setImageName(activity.getReceiveColor());
+                recentActivity.setAmount(-activity.getAmount());
+            }
+
+            dateTime = activity.getDateString();
+            recentActivity.setDateTime(dateTime);
+            recentActivity.setDateString(sdf.format(Objects.requireNonNull(df.parse(dateTime))));
+
+            recentActivities.add(recentActivity);
+        }
+        activities.clear();
+        return recentActivities;
+    }
+
+    private void showAlert(String title, @Nullable String message) {
+        getActivity().runOnUiThread(() -> {
+            AlertDialog dialog = new AlertDialog.Builder(getContext())
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Ok", null)
+                    .create();
+            dialog.show();
+        });
+    }
+
+    private void showToast(String message) {
+        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show());
+    }
+
+    private JSONObject parseResponse(ResponseBody responseBody) {
+        if (responseBody != null) {
+            try {
+                return new JSONObject(responseBody.string());
+            } catch (IOException | JSONException e) {
+                Log.e(TAG, "Error parsing response", e);
+            }
+        }
+        return new JSONObject();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (activityList.isEmpty()){
+            getActivitiesBefore(df.format(new Date()));
+        }else{
+            getActivitiesAfter(activityList.get(0).getDateTime());
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void showMore(){
+        RecentActivity lastActivity = activityList.get(activityList.size()-1);
+        activityList.remove(lastActivity);
+        activityBackup.remove(lastActivity);
+        getActivitiesBefore(lastActivity.getDateTime());
     }
 }

@@ -25,6 +25,8 @@ public class ActivitiesDetail extends AppCompatActivity {
         initName();
         initAmount();
         initExtra();
+        initTime();
+        initReceipt();
     }
 
     Button back;
@@ -41,7 +43,9 @@ public class ActivitiesDetail extends AppCompatActivity {
     ImageView image;
     private void initImage() {
         image = (ImageView) findViewById(R.id.id_iv_activitiesDetail_image);
-        image.setImageResource(getImageId(getIntent().getStringExtra("image")));
+//        image.setImageResource(getImageId(getIntent().getStringExtra("image")));
+        image.setImageResource(getNameColor(getIntent().getStringExtra("name"),
+                getIntent().getStringExtra("image")));
     }
 
     TextView name;
@@ -67,6 +71,18 @@ public class ActivitiesDetail extends AppCompatActivity {
         }
     }
 
+    TextView time;
+    private void initTime(){
+        time = (TextView) findViewById(R.id.id_tv_activityDetail_time);
+        time.setText(getIntent().getStringExtra("time"));
+    }
+
+    TextView receipt;
+    private void initReceipt(){
+        receipt = (TextView) findViewById(R.id.id_tv_activityDetail_receipt);
+        receipt.setText(getIntent().getStringExtra("receipt"));
+    }
+
     private int getImageId(String imageName){
         switch (imageName){
             case "dribbble":
@@ -79,6 +95,33 @@ public class ActivitiesDetail extends AppCompatActivity {
                 return R.drawable.apple;
             default:
                 return R.drawable.rounded_rectangle;
+        }
+    }
+
+    TextView letter;
+    private int getNameColor(String name, String color){
+        letter = (TextView) findViewById(R.id.id_activity_detail_letter);
+        letter.setText(name.substring(0,1).toUpperCase());
+        switch (color){
+            case "#cdb4db":
+                return R.drawable.circle_case1;
+            case  "#ffafcc":
+                return R.drawable.circle_case2;
+            case "#ffcaca":
+                return R.drawable.circle_case3;
+            case "#fb6f92":
+                return R.drawable.circle_case4;
+            case "#449dd1":
+                return R.drawable.circle_case5;
+            case "#bccef8":
+                return R.drawable.circle_case6;
+            case "#a2d2ff":
+                return R.drawable.circle_case7;
+            case "#74c69d":
+                return R.drawable.circle_case8;
+            default:
+                letter.setText("");
+                return R.drawable.payoneer;
         }
     }
 
