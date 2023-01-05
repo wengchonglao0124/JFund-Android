@@ -2,12 +2,15 @@ package com.example.jacaranda.HintPage;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 import com.example.jacaranda.Activity.ForgotPassword;
 import com.example.jacaranda.Activity.TransferActivity;
+import com.example.jacaranda.Activity.Verification2;
+import com.example.jacaranda.MainActivity;
 import com.example.jacaranda.R;
 
 public class ResetSuccessfully extends AppCompatActivity {
@@ -22,8 +25,9 @@ public class ResetSuccessfully extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new ForgotPassword().intance.finish();
-                finish();
+                Intent intent = new Intent(ResetSuccessfully.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
     }

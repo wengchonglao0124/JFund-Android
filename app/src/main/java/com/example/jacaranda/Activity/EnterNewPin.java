@@ -62,6 +62,7 @@ public class EnterNewPin extends AppCompatActivity {
                 if(s.length() == 6){
                     Intent intent = new Intent(EnterNewPin.this, ConfirmNewPin.class);
                     intent.putExtra("name", text);
+                    intent.putExtra("newPin", pin.getText().toString());
                     startActivity(intent);
                     finish();
                 }
