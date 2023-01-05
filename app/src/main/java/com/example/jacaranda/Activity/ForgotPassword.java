@@ -74,7 +74,8 @@ public class ForgotPassword extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(ForgotPassword.this, Verification2.class);
+                Intent i = new Intent(ForgotPassword.this, ResetPassword.class);
+                i.putExtra("email", text.getText().toString());
                 startActivity(i);
             }
         });

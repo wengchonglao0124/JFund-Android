@@ -259,9 +259,6 @@ public class VerificationActivity extends AppCompatActivity {
         new Thread(){
             @Override
             public void run() {
-
-
-
                 JSONObject userInfo = parseInfo();
 
                 //setup RequestBody
