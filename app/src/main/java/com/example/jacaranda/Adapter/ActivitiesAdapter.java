@@ -174,6 +174,8 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
                 return R.drawable.circle_case7;
             case "#74c69d":
                 return R.drawable.circle_case8;
+            case "topUp":
+                return R.drawable.top_up_to_balance;
             default:
                 letter.setText("");
                 return R.drawable.payoneer;
