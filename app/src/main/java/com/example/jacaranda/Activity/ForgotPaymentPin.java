@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.jacaranda.Constants;
 import com.example.jacaranda.R;
 
 public class ForgotPaymentPin extends AppCompatActivity {
@@ -74,6 +75,7 @@ public class ForgotPaymentPin extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i = new Intent(ForgotPaymentPin.this, EnterNewPin.class);
                 i.putExtra("name", "Forgot payment pin");
+                i.putExtra("request", Constants.PIN_FORGOT);
                 startActivity(i);
                 finish();
             }

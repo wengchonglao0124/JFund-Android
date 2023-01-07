@@ -63,6 +63,8 @@ public class EnterNewPin extends AppCompatActivity {
                     Intent intent = new Intent(EnterNewPin.this, ConfirmNewPin.class);
                     intent.putExtra("name", text);
                     intent.putExtra("newPin", pin.getText().toString());
+//                    int request_type = getIntent().getIntExtra("request", 0);
+                    intent.putExtra("intent", getIntent());
                     startActivity(intent);
                     finish();
                 }

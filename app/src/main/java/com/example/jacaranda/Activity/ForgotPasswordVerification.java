@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.jacaranda.Constants;
 import com.example.jacaranda.HintPage.ResetSuccessfully;
 import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.R;
@@ -40,11 +41,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ForgotVerification extends AppCompatActivity {
+public class ForgotPasswordVerification extends AppCompatActivity {
 
     private JacarandaApplication app;
-    private static final String TAG = "Verification2";
-    private static final String PATH_CHANGE_PWD = "/verify_pswdcode";
+    private static final String TAG = "ForgotVerification";
     private SharedPreferences preferences;
 
     @Override
@@ -153,7 +153,8 @@ public class ForgotVerification extends AppCompatActivity {
                 }else if(code6.isFocused()){
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                     // imm.hideSoftInputFromWindow(code6.getWindowToken(), 0);
-                    isTrue();
+//                    isTrue();
+                    verify();
                 }
             }
         }
@@ -170,7 +171,7 @@ public class ForgotVerification extends AppCompatActivity {
             code4.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
             code5.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
             code6.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
-            Intent intent = new Intent(ForgotVerification.this, ResetSuccessfully.class);
+            Intent intent = new Intent(ForgotPasswordVerification.this, ResetSuccessfully.class);
             startActivity(intent);
             finish();
         }else{
@@ -280,7 +281,7 @@ public class ForgotVerification extends AppCompatActivity {
                 );
 
                 Request request = new Request.Builder()
-                        .url(app.getURL() + "/code")
+                        .url(app.getURL() + Constants.PATH_VERIFY_PWD)
                         .post(requestBody)
                         .build();
 
@@ -317,7 +318,7 @@ public class ForgotVerification extends AppCompatActivity {
                                             code4.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
                                             code5.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
                                             code6.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
-                                            Intent intent = new Intent(ForgotVerification.this, ResetSuccessfully.class);
+                                            Intent intent = new Intent(ForgotPasswordVerification.this, ResetSuccessfully.class);
                                             startActivity(intent);
                                             finish();
                                         }else{

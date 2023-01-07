@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jacaranda.Constants;
 import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.R;
 
@@ -44,8 +45,7 @@ import okhttp3.Response;
 public class ResetPassword extends AppCompatActivity {
 
     private JacarandaApplication app;
-    private static final String TAG = "ConfirmNewPin";
-    private static final String PATH_CHANGE_PWD = "/changePin";
+    private static final String TAG = "ResetPassword";
     private SharedPreferences preferences;
 
 
@@ -257,7 +257,7 @@ public class ResetPassword extends AppCompatActivity {
                 );
 
                 Request request = new Request.Builder()
-                        .url(app.getURL() + PATH_CHANGE_PWD)
+                        .url(app.getURL() + Constants.PATH_FORGOT_PWD)
                         .addHeader("token",preferences.getString("AccessToken", null))
                         .post(requestBody)
                         .build();
@@ -293,7 +293,8 @@ public class ResetPassword extends AppCompatActivity {
                                         Log.i(TAG, data);
 
                                         if (code.equals("200")){
-                                            Intent intent = new Intent(ResetPassword.this, ForgotVerification.class);
+                                            Intent intent = new Intent(ResetPassword.this, ForgotPasswordVerification.class);
+                                            intent.putExtra("request", Constants.PWD_FORGOT);
                                             startActivity(intent);
                                         }else{
                                             showToast(message);

@@ -1,30 +1,60 @@
 package com.example.jacaranda.Activity;
 
+import static com.example.jacaranda.Util.JsonToStringUtil.parseResponse;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.example.jacaranda.Constants;
+import com.example.jacaranda.HintPage.ResetSuccessfully;
 import com.example.jacaranda.HintPage.SignUpSuccessfullyActivity;
+import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class ForgotPinVerification extends AppCompatActivity {
+
+    private JacarandaApplication app;
+    private static final String TAG = "ForgotVerification";
+    private SharedPreferences preferences;
+
     private EditText code1, code2, code3, code4, code5, code6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        app = (JacarandaApplication)getApplication();
+        preferences = getSharedPreferences("config", Context.MODE_PRIVATE);
         setContentView(R.layout.activity_forgot_pin_verification);
         code1 = (EditText) findViewById(R.id.id_otp_code1);
         code2 = (EditText) findViewById(R.id.id_otp_code2);
@@ -117,7 +147,8 @@ public class ForgotPinVerification extends AppCompatActivity {
                 }else if(code6.isFocused()){
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                     // imm.hideSoftInputFromWindow(code6.getWindowToken(), 0);
-                    isTrue();
+//                    isTrue();
+                    verify();
                 }
             }
         }
@@ -211,5 +242,129 @@ public class ForgotPinVerification extends AppCompatActivity {
         }else{
             return super.onKeyUp(keyCode, event);
         }
+    }
+
+    private JSONObject parseInfo(){
+
+        try {
+            final String getCode = code1.getText().toString()+code2.getText().toString()+
+                    code3.getText().toString()+code4.getText().toString()+
+                    code5.getText().toString()+code6.getText().toString();
+
+            //parse values in textbox and transfer to json
+            JSONObject userInfo = new JSONObject();
+            userInfo.put("email", getIntent().getStringExtra("email"));
+            userInfo.put("code", getCode);
+            Log.i(TAG, userInfo.toString());
+            return userInfo;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void verify(){
+        new Thread(){
+            @Override
+            public void run() {
+                JSONObject userInfo = parseInfo();
+
+                //setup RequestBody
+                final RequestBody requestBody = RequestBody.create(
+                        userInfo.toString(),
+                        MediaType.get("application/json; charset=utf-8")
+                );
+
+
+                Request request = new Request.Builder()
+                        .url(app.getURL() + Constants.PATH_VERIFY_PIN)
+                        .post(requestBody)
+                        .build();
+
+                new OkHttpClient()
+                        .newCall(request)
+                        .enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                showAlert("Failed to load data", "Error: " + e.toString());
+                            }
+
+                            @Override
+                            public void onResponse(
+                                    @NonNull Call call,
+                                    @NonNull Response response
+                            ) throws IOException {
+                                if (!response.isSuccessful()) {
+                                    showAlert(
+                                            "Failed to load page",
+                                            "Error: " + response.toString()
+                                    );
+                                } else {
+                                    try {
+                                        final JSONObject responseJson = parseResponse(response.body());
+                                        Log.i(TAG, responseJson.toString());
+
+                                        String code;
+                                        code = responseJson.optString("code");
+
+                                        if(code.equals("200")){
+                                            code1.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
+                                            code2.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
+                                            code3.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
+                                            code4.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
+                                            code5.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
+                                            code6.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
+                                            Intent intent = new Intent(ForgotPinVerification.this, ResetSuccessfully.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }else{
+                                            code1.setBackgroundResource(R.drawable.rounded_rectangle_code_false);
+                                            code2.setBackgroundResource(R.drawable.rounded_rectangle_code_false);
+                                            code3.setBackgroundResource(R.drawable.rounded_rectangle_code_false);
+                                            code4.setBackgroundResource(R.drawable.rounded_rectangle_code_false);
+                                            code5.setBackgroundResource(R.drawable.rounded_rectangle_code_false);
+                                            code6.setBackgroundResource(R.drawable.rounded_rectangle_code_false);
+                                            Timer timer = new Timer();
+                                            TimerTask timerTask = new TimerTask() {
+                                                @Override
+                                                public void run() {
+                                                    code1.setBackgroundResource(R.drawable.rounded_rectangle_code_normal);
+                                                    code2.setBackgroundResource(R.drawable.rounded_rectangle_code_normal);
+                                                    code3.setBackgroundResource(R.drawable.rounded_rectangle_code_normal);
+                                                    code4.setBackgroundResource(R.drawable.rounded_rectangle_code_normal);
+                                                    code5.setBackgroundResource(R.drawable.rounded_rectangle_code_normal);
+                                                    code6.setBackgroundResource(R.drawable.rounded_rectangle_code_normal);
+                                                }
+                                            };
+                                            timer.schedule(timerTask,1000);
+                                        }
+
+                                    }catch (IOException | JSONException e) {
+                                        Log.e(TAG, "Error parsing response", e);
+                                    }
+                                }
+                            }
+                        });
+            }
+
+
+        }.start();
+    }
+
+
+
+    private void showAlert(String title, @Nullable String message) {
+        runOnUiThread(() -> {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Ok", null)
+                    .create();
+            dialog.show();
+        });
+    }
+
+    private void showToast(String message) {
+        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_LONG).show());
     }
 }

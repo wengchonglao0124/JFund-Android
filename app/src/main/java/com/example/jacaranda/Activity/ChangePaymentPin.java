@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.jacaranda.Constants;
 import com.example.jacaranda.HintPage.ChangePasswordSuccessfully;
 import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.MyView.PwdEditText;
@@ -81,9 +82,10 @@ public class ChangePaymentPin extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(s.length() == 6){
-//                    verifyPin(parseInfo());
                     Intent intent = new Intent(ChangePaymentPin.this, EnterNewPin.class);
                     intent.putExtra("name", "Change payment pin");
+                    intent.putExtra("request", Constants.PIN_CHANGE);
+                    intent.putExtra("oldPin", pin.getText().toString());
                     startActivity(intent);
                     finish();
                 }
@@ -161,6 +163,7 @@ public class ChangePaymentPin extends AppCompatActivity {
                                         if (code.equals("200")){
                                             Intent intent = new Intent(ChangePaymentPin.this, EnterNewPin.class);
                                             intent.putExtra("name", "Change payment pin");
+                                            intent.putExtra("request", Constants.PIN_CHANGE);
                                             startActivity(intent);
                                             finish();
                                         }else{

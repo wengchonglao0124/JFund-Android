@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jacaranda.Constants;
 import com.example.jacaranda.HintPage.PaymentPinChanged;
 import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.MyView.PwdEditText;
@@ -92,7 +93,13 @@ public class ConfirmNewPin extends AppCompatActivity {
                 if(s.length() == 6){
                     String oldPin = getIntent().getStringExtra("newPin");
                     if (oldPin.equals(pin.getText().toString())){
-                        setNewPin(parseInfo());
+                        try {
+                            setNewPin(parseInfo());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }else{
+                        showToast("Pin does not match");
                     }
                 }
             }
@@ -104,15 +111,23 @@ public class ConfirmNewPin extends AppCompatActivity {
         });
     }
 
-    private JSONObject parseInfo(){
-
+    String request_url;
+    private JSONObject parseInfo() throws JSONException {
         //parse values in textbox and transfer to json
         JSONObject json_body = new JSONObject();
 
-        try {
-            json_body.put("code", pin.getText().toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
+        Intent old_intent = (Intent) getIntent().getExtras().get("intent");
+        int request_type = old_intent.getIntExtra("request", 0);
+
+        if (request_type == Constants.PIN_FORGOT){
+            request_url = app.getURL() + Constants.PATH_FORGOT_PIN;
+            json_body.put("pin", pin.getText().toString());
+        }else if (request_type == Constants.PIN_CHANGE){
+            request_url = app.getURL() + Constants.PATH_CHANGE_Pin;
+            json_body.put("newPin", pin.getText().toString());
+            json_body.put("oldPin", old_intent.getStringExtra("oldPin"));
+        }else{
+            showAlert("ERROR! PLEASE RETRY AGAIN", "");
         }
 
         return json_body;
@@ -131,7 +146,7 @@ public class ConfirmNewPin extends AppCompatActivity {
                 );
 
                 Request request = new Request.Builder()
-                        .url(app.getURL() + PATH_CHANGE_PWD)
+                        .url(request_url)
                         .addHeader("token",preferences.getString("AccessToken", null))
                         .post(requestBody)
                         .build();
