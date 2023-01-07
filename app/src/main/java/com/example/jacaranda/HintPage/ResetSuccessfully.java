@@ -7,9 +7,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.jacaranda.Activity.ForgotPassword;
-import com.example.jacaranda.Activity.TransferActivity;
-import com.example.jacaranda.Activity.Verification2;
 import com.example.jacaranda.MainActivity;
 import com.example.jacaranda.R;
 

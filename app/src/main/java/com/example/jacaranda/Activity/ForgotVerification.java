@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,7 +21,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.jacaranda.HintPage.SignUpSuccessfullyActivity;
+import com.example.jacaranda.HintPage.ResetSuccessfully;
+import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.R;
 
 import org.json.JSONException;
@@ -38,23 +40,46 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class VerificationActivity extends AppCompatActivity {
-    private EditText code1, code2, code3, code4, code5, code6;
+public class ForgotVerification extends AppCompatActivity {
 
-    private static final String BACKEND_URL = "https://xp.lycyy.cc";
-    private static final String TAG = "VerificationActivity";
+    private JacarandaApplication app;
+    private static final String TAG = "Verification2";
+    private static final String PATH_CHANGE_PWD = "/verify_pswdcode";
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_verification);
+        app = (JacarandaApplication)getApplication();
+        preferences = getSharedPreferences("config", Context.MODE_PRIVATE);
+        setContentView(R.layout.activity_verification2);
+        initAll();
+    }
 
-        code1 = (EditText) findViewById(R.id.id_otp_code1);
-        code2 = (EditText) findViewById(R.id.id_otp_code2);
-        code3 = (EditText) findViewById(R.id.id_otp_code3);
-        code4 = (EditText) findViewById(R.id.id_otp_code4);
-        code5 = (EditText) findViewById(R.id.id_otp_code5);
-        code6 = (EditText) findViewById(R.id.id_otp_code6);
+    private void initAll() {
+        initBack();
+        initOTP();
+    }
+
+    Button back;
+    private void initBack() {
+        back = (Button) findViewById(R.id.id_btn_forgotPasswordVerification_back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    private EditText code1, code2, code3, code4, code5, code6;
+    private void initOTP() {
+        code1 = (EditText) findViewById(R.id.id_verification_code1);
+        code2 = (EditText) findViewById(R.id.id_verification_code2);
+        code3 = (EditText) findViewById(R.id.id_verification_code3);
+        code4 = (EditText) findViewById(R.id.id_verification_code4);
+        code5 = (EditText) findViewById(R.id.id_verification_code5);
+        code6 = (EditText) findViewById(R.id.id_verification_code6);
 
         int length1 = code1.getText().toString().replace(" ", "").length();
         int length2 = code2.getText().toString().replace(" ", "").length();
@@ -77,19 +102,6 @@ public class VerificationActivity extends AppCompatActivity {
         code4.addTextChangedListener(textWatcher);
         code5.addTextChangedListener(textWatcher);
         code6.addTextChangedListener(textWatcher);
-
-        initBack();
-    }
-
-    Button back;
-    private void initBack() {
-        back = (Button) findViewById(R.id.id_btn_verification_back);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
     }
 
     private final TextWatcher textWatcher = new TextWatcher() {
@@ -122,28 +134,28 @@ public class VerificationActivity extends AppCompatActivity {
 
         @Override
         public void afterTextChanged(Editable editable) {
-        if (editable.toString().length() == 1) {
-            if (code1.isFocused()) {
-                code1.setFocusable(false);
-                code2.requestFocus();
-            }else if (code2.isFocused()) {
-                code2.setFocusable(false);
-                code3.requestFocus();
-            }else if(code3.isFocused()){
-                code3.setFocusable(false);
-                code4.requestFocus();
-            }else if(code4.isFocused()){
-                code4.setFocusable(false);
-                code5.requestFocus();
-            }else if(code5.isFocused()){
-                code5.setFocusable(false);
-                code6.requestFocus();
-            }else if(code6.isFocused()){
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                // imm.hideSoftInputFromWindow(code6.getWindowToken(), 0);
-                verify();
+            if (editable.toString().length() == 1) {
+                if (code1.isFocused()) {
+                    code1.setFocusable(false);
+                    code2.requestFocus();
+                }else if (code2.isFocused()) {
+                    code2.setFocusable(false);
+                    code3.requestFocus();
+                }else if(code3.isFocused()){
+                    code3.setFocusable(false);
+                    code4.requestFocus();
+                }else if(code4.isFocused()){
+                    code4.setFocusable(false);
+                    code5.requestFocus();
+                }else if(code5.isFocused()){
+                    code5.setFocusable(false);
+                    code6.requestFocus();
+                }else if(code6.isFocused()){
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    // imm.hideSoftInputFromWindow(code6.getWindowToken(), 0);
+                    isTrue();
+                }
             }
-        }
         }
     };
 
@@ -158,7 +170,7 @@ public class VerificationActivity extends AppCompatActivity {
             code4.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
             code5.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
             code6.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
-            Intent intent = new Intent(VerificationActivity.this, SignUpSuccessfullyActivity.class);
+            Intent intent = new Intent(ForgotVerification.this, ResetSuccessfully.class);
             startActivity(intent);
             finish();
         }else{
@@ -268,7 +280,7 @@ public class VerificationActivity extends AppCompatActivity {
                 );
 
                 Request request = new Request.Builder()
-                        .url(BACKEND_URL + "/code")
+                        .url(app.getURL() + "/code")
                         .post(requestBody)
                         .build();
 
@@ -305,7 +317,7 @@ public class VerificationActivity extends AppCompatActivity {
                                             code4.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
                                             code5.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
                                             code6.setBackgroundResource(R.drawable.rounded_rectangle_code_right);
-                                            Intent intent = new Intent(VerificationActivity.this, SignUpSuccessfullyActivity.class);
+                                            Intent intent = new Intent(ForgotVerification.this, ResetSuccessfully.class);
                                             startActivity(intent);
                                             finish();
                                         }else{
@@ -336,7 +348,7 @@ public class VerificationActivity extends AppCompatActivity {
                                 }
                             }
                         });
-                }
+            }
 
 
         }.start();

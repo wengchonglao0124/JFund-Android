@@ -72,7 +72,7 @@ public class ForgotPaymentPin extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(ForgotPaymentPin.this, ForgotPinVerification.class);
+                Intent i = new Intent(ForgotPaymentPin.this, EnterNewPin.class);
                 i.putExtra("name", "Forgot payment pin");
                 startActivity(i);
                 finish();

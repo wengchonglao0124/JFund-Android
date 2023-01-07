@@ -167,7 +167,7 @@ public class ConfirmNewPin extends AppCompatActivity {
                                         Log.i(TAG, data);
 
                                         if (code.equals("200")){
-                                            Intent intent = new Intent(ConfirmNewPin.this, PaymentPinChanged.class);
+                                            Intent intent = new Intent(ConfirmNewPin.this, ForgotPinVerification.class);
                                             startActivity(intent);
                                             finish();
                                         }else{

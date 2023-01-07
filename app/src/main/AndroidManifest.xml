@@ -72,7 +72,7 @@
             android:name=".Activity.ResetPassword"
             android:exported="false" />
         <activity
-            android:name=".Activity.Verification2"
+            android:name=".Activity.ForgotVerification"
             android:exported="false" />
         <activity
             android:name=".Activity.ForgotPassword"
@@ -96,7 +96,7 @@
             android:name=".HintPage.SignUpSuccessfullyActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.VerificationActivity"
+            android:name=".Activity.RegisterVerificationActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.SignUpActivity"

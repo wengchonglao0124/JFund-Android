@@ -25,8 +25,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jacaranda.HintPage.PaymentPinChanged;
-import com.example.jacaranda.HintPage.ResetSuccessfully;
 import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.R;
 
@@ -295,7 +293,7 @@ public class ResetPassword extends AppCompatActivity {
                                         Log.i(TAG, data);
 
                                         if (code.equals("200")){
-                                            Intent intent = new Intent(ResetPassword.this, Verification2.class);
+                                            Intent intent = new Intent(ResetPassword.this, ForgotVerification.class);
                                             startActivity(intent);
                                         }else{
                                             showToast(message);

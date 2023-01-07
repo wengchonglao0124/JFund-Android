@@ -314,7 +314,7 @@ public class SignUpActivity extends AppCompatActivity {
 
 
                                             if (code.equals("200")){
-                                                Intent intent = new Intent(SignUpActivity.this, VerificationActivity.class);
+                                                Intent intent = new Intent(SignUpActivity.this, RegisterVerificationActivity.class);
                                                 intent.putExtra("email", userInfo.optString("email"));
                                                 startActivity(intent);
                                             }else{
