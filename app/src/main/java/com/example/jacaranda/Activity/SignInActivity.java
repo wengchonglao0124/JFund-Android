@@ -261,7 +261,7 @@ public class SignInActivity extends AppCompatActivity {
                                         final JSONObject responseJson = parseResponse(response.body());
                                         Log.i(TAG, responseJson.toString());
 
-                                        String code, message, data, accessToken, refreshToken, userID;
+                                        String code, message, data;
                                         code = responseJson.optString("code");
                                         message = responseJson.optString("msg");
                                         data = responseJson.optString("data");
@@ -273,15 +273,20 @@ public class SignInActivity extends AppCompatActivity {
                                             rememberUser(user_json);
 
                                             try {
+                                                String username, accessToken, refreshToken, userID, profileColor;
                                                 final JSONObject responseBody = new JSONObject(data);
                                                 accessToken = responseBody.optString("AccessToken");
                                                 refreshToken = responseBody.optString("RefreshToken");
                                                 userID = responseBody.optString("UserID");
+                                                username = responseBody.optString("UserName");
+                                                profileColor = responseBody.optString("image");
 
                                                 SharedPreferences.Editor  editor = preferences.edit();
                                                 editor.putString("AccessToken", accessToken);
                                                 editor.putString("RefreshToken", refreshToken);
                                                 editor.putString("userID", userID);
+                                                editor.putString("username", username);
+                                                editor.putString("profileColor", profileColor);
                                                 editor.apply();
 //                                                editor.commit();
                                             } catch (JSONException e) {
