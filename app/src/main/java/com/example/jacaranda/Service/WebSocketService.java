@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -36,11 +37,24 @@ public class WebSocketService extends Service {
     public Application application;
 
     public Context context;
-    @Nullable
+
+    private String data = "running";
+
+    public class MyBinder extends Binder{
+        public void setData(String data){
+            WebSocketService.this.data = data;
+        }
+    }
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return new MyBinder();
     }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return super.onUnbind(intent);
+    }
+
     private InitSocketThread thread;
 
     @Override
@@ -58,6 +72,7 @@ public class WebSocketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        data = intent.getStringExtra("data");
         return super.onStartCommand(intent, flags, startId);
 
     }
@@ -194,6 +209,7 @@ public class WebSocketService extends Service {
             mHandler.postDelayed(this, HEART_BEAT_RATE);//每隔一定的时间，对长连接进行一次心跳检测
         }
     };
+
     //关闭长连接
     @Override
     public void onDestroy() {

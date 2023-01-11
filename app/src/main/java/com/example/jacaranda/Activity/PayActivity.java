@@ -2,8 +2,13 @@ package com.example.jacaranda.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -11,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -18,14 +24,28 @@ import com.example.jacaranda.HintPage.SuccessfullyPay;
 import com.example.jacaranda.HintPage.SuccessfullyTransferActivity;
 import com.example.jacaranda.R;
 import com.example.jacaranda.Service.WebSocketService;
+import com.example.jacaranda.Util.QRcodeUtil;
 
-public class PayActivity extends AppCompatActivity {
+public class PayActivity extends AppCompatActivity implements ServiceConnection {
+    private WebSocketService.MyBinder myBinder = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay);
         initClick();
+        initQRcode();
+    }
+
+    private void initQRcode(){
+        code.setImageBitmap(QRcodeUtil.createQRCodeBitmap("hello!",
+                400,
+                400,
+                "UTF-8",
+                "H",
+                "1",
+                Color.BLACK,
+                Color.WHITE));
     }
 
     private void initClick() {
@@ -34,13 +54,13 @@ public class PayActivity extends AppCompatActivity {
         clickQRcode();
     }
 
-    View code;
+    ImageView code;
     TextView amount;
     PopupWindow popupWindow;
     Button Back,pay;
     private void clickQRcode() {
-        code = (View) findViewById(R.id.id_pay_QR_code);
-        code.setOnClickListener(new View.OnClickListener() {
+        code = (ImageView) findViewById(R.id.id_pay_QR_code);
+        code.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LayoutInflater inflater = getLayoutInflater();
@@ -157,7 +177,10 @@ public class PayActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        startService();
+//        startService();
+        Intent intent1 = new Intent(PayActivity.this, WebSocketService.class);
+        bindService(intent1, this, BIND_AUTO_CREATE);
+
     }
 
     private void startService(){
@@ -176,6 +199,18 @@ public class PayActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        stopService();
+//        stopService();
+
+        unbindService(this);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder binder) {
+        myBinder = (WebSocketService.MyBinder) binder;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+
     }
 }
