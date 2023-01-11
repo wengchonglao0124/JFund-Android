@@ -12,13 +12,16 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.example.jacaranda.JacarandaApplication;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -32,6 +35,7 @@ public class WebSocketService extends Service {
     private static final String BACKEND_URL = "ws://lycyy.cc:8080";
     private static final String TAG = "WebSocketService";
 
+    private Callback callback;
     private SharedPreferences preferences;
 
     public Application application;
@@ -43,6 +47,10 @@ public class WebSocketService extends Service {
     public class MyBinder extends Binder{
         public void setData(String data){
             WebSocketService.this.data = data;
+        }
+
+        public WebSocketService getService(){
+            return WebSocketService.this;
         }
     }
     @Override
@@ -121,9 +129,17 @@ public class WebSocketService extends Service {
 
                 try {
                     //这个是解析你的回调数据
-//                    JSONObject jsonObject = JSON.parseObject(text);
+                    JSONObject jsonObject = JSON.parseObject(text);
+                    String tid;
+                    tid = jsonObject.getString("tid");
                     Log.i(TAG, text);
+                    if (tid == null){
+                        return;
+                    }
 
+                    if (callback != null){
+                        callback.onDataChange(jsonObject.toJSONString());
+                    }
 
 
                 } catch (JSONException e) {
@@ -219,6 +235,18 @@ public class WebSocketService extends Service {
         if (mWebSocket != null) {
             mWebSocket.close(1000, null);
         }
+    }
+
+    public static interface Callback{
+        void onDataChange(String str);
+    }
+
+    public void setCallback(Callback callback){
+        this.callback = callback;
+    }
+
+    public Callback callback(){
+        return callback;
     }
 
 }
