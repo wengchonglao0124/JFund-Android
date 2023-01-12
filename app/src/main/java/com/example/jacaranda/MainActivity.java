@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,6 +20,7 @@ import com.example.jacaranda.Fragment.ShopFragment;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = "MainActivity";
     ViewPager2 ViewPager;
 
     @Override
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ViewPagerAdapter PagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),
                 getLifecycle(), fragments);
         ViewPager.setAdapter(PagerAdapter);
+        ViewPager.setSaveEnabled(false);
         ViewPager.setUserInputEnabled(false);
         ViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 SwitchPager(position);
+                Log.i(TAG, String.valueOf(position));
             }
         });
 
