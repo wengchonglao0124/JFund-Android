@@ -2,11 +2,13 @@ package com.example.jacaranda.HintPage;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.jacaranda.MainActivity;
 import com.example.jacaranda.R;
 
 public class SuccessfullyTopUp extends AppCompatActivity {
@@ -25,7 +27,10 @@ public class SuccessfullyTopUp extends AppCompatActivity {
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                Intent intent = new Intent();
+                intent.setClass(SuccessfullyTopUp.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
     }

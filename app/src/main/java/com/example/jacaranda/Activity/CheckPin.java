@@ -8,10 +8,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,7 +21,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jacaranda.Constants;
+import com.example.jacaranda.HintPage.SuccessfullyPay;
 import com.example.jacaranda.HintPage.SuccessfullyTransferActivity;
+import com.example.jacaranda.MainActivity;
 import com.example.jacaranda.MyView.PwdEditText;
 import com.example.jacaranda.R;
 
@@ -46,16 +49,29 @@ import okhttp3.Response;
 
 public class CheckPin extends AppCompatActivity {
     private static final String BACKEND_URL = "https://xp.lycyy.cc";
-    private static final String PATH = "/checkTransferTo";
+//    private static final String PATH = "/checkTransferTo";
     private static final String TAG = "CheckPin";
 
     private SharedPreferences preferences;
+
+    private String path;
+    private int type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_pin);
         preferences = getSharedPreferences("config", Context.MODE_PRIVATE);
+
+        Intent intent = getIntent();
+        path = intent.getStringExtra("path");
+        type = intent.getIntExtra("type", 0);
+
+        if (path == null || type == 0){
+            Log.e(TAG, "ERROR LOADING");
+        }
+
+        Log.i(TAG, path);
         initAll();
     }
 
@@ -136,8 +152,10 @@ public class CheckPin extends AppCompatActivity {
                             MediaType.get("application/json; charset=utf-8")
                     );
 
+                    Log.i(TAG, path);
+
                     Request request = new Request.Builder()
-                            .url(BACKEND_URL + PATH)
+                            .url(BACKEND_URL + path)
                             .post(requestBody)
                             .addHeader("token",preferences.getString("AccessToken", null))
                             .build();
@@ -149,6 +167,10 @@ public class CheckPin extends AppCompatActivity {
                                 @Override
                                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                                     showAlert("Failed to load data", "Error: " + e.toString());
+                                    Intent intent;
+                                    intent = new Intent(CheckPin.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
                                 }
 
                                 @Override
@@ -176,7 +198,15 @@ public class CheckPin extends AppCompatActivity {
                                                 public void run() {
 //                                                    progressBar.setVisibility(View.INVISIBLE);
                                                     if (code.equals("200")){
-                                                        Intent intent = new Intent(CheckPin.this, SuccessfullyTransferActivity.class);
+                                                        Intent intent;
+                                                        if (type == Constants.PAY){
+                                                            intent = new Intent(CheckPin.this, SuccessfullyPay.class);
+                                                        }else if(type == Constants.TRANSFER){
+                                                            intent = new Intent(CheckPin.this, SuccessfullyTransferActivity.class);
+                                                        }else{
+                                                            Log.e(TAG, "ERROR LOADING NEXT PAGE");
+                                                            return;
+                                                        }
                                                         intent.putExtra("amount", getIntent().getStringExtra("amount"));
                                                         Log.i(TAG, getIntent().getStringExtra("username"));
                                                         intent.putExtra("username", getIntent().getStringExtra("username"));

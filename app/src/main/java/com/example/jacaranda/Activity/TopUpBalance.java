@@ -21,11 +21,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.jacaranda.HintPage.SuccessfullyTopUp;
 import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.MainActivity;
 import com.example.jacaranda.MyView.MyInputFilter;
 import com.example.jacaranda.R;
 import com.stripe.android.PaymentConfiguration;
+import com.stripe.android.model.PaymentIntent;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
 
@@ -33,6 +35,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -185,12 +189,15 @@ public class TopUpBalance extends AppCompatActivity {
     }
 
 
+    Double amount;
     private void fetchPaymentIntent() {
+
+        amount = Double.parseDouble(text.getText().toString());
         JSONObject json_amount = new JSONObject();
 
         try {
 
-            json_amount.put("amounts", Double.parseDouble(text.getText().toString()));
+            json_amount.put("amounts", amount);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -298,7 +305,18 @@ public class TopUpBalance extends AppCompatActivity {
     ) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             showToast("Payment complete!");
-            finish();
+            Timer timer = new Timer();
+            TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent();
+                    intent.setClass(TopUpBalance.this, SuccessfullyTopUp.class);
+                    intent.putExtra("amount", amount.toString());
+                    startActivity(intent);
+                }
+            };
+            timer.schedule(timerTask,1000);
+
         } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
             Log.i(TAG, "Payment canceled!");
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {

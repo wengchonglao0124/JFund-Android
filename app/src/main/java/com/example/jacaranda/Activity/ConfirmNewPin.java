@@ -12,18 +12,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Selection;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jacaranda.Constants;
-import com.example.jacaranda.HintPage.PaymentPinChanged;
 import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.MyView.PwdEditText;
 import com.example.jacaranda.R;
+import com.example.jacaranda.SelectAccount;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -112,22 +114,32 @@ public class ConfirmNewPin extends AppCompatActivity {
     }
 
     String request_url;
+    int request_type;
     private JSONObject parseInfo() throws JSONException {
         //parse values in textbox and transfer to json
         JSONObject json_body = new JSONObject();
 
         Intent old_intent = (Intent) getIntent().getExtras().get("intent");
-        int request_type = old_intent.getIntExtra("request", 0);
+        request_type = old_intent.getIntExtra("request", 0);
 
-        if (request_type == Constants.PIN_FORGOT){
-            request_url = app.getURL() + Constants.PATH_FORGOT_PIN;
-            json_body.put("pin", pin.getText().toString());
-        }else if (request_type == Constants.PIN_CHANGE){
-            request_url = app.getURL() + Constants.PATH_CHANGE_Pin;
-            json_body.put("newPin", pin.getText().toString());
-            json_body.put("oldPin", old_intent.getStringExtra("oldPin"));
-        }else{
-            showAlert("ERROR! PLEASE RETRY AGAIN", "");
+        switch (request_type){
+            case Constants.PIN_FORGOT:
+                request_url = app.getURL() + Constants.PATH_FORGOT_PIN;
+                json_body.put("pin", pin.getText().toString());
+                break;
+            case Constants.PIN_CHANGE:
+                request_url = app.getURL() + Constants.PATH_CHANGE_PIN;
+                json_body.put("newPin", pin.getText().toString());
+                json_body.put("oldPin", old_intent.getStringExtra("oldPin"));
+                break;
+            case Constants.PIN_SET:
+                request_url = app.getURL() + Constants.PATH_SET_PIN;
+                json_body.put("pin", pin.getText().toString());
+                break;
+            default:
+                showAlert("ERROR! PLEASE RETRY AGAIN", "");
+                finish();
+
         }
 
         return json_body;
@@ -182,7 +194,15 @@ public class ConfirmNewPin extends AppCompatActivity {
                                         Log.i(TAG, data);
 
                                         if (code.equals("200")){
-                                            Intent intent = new Intent(ConfirmNewPin.this, ForgotPinVerification.class);
+                                            Intent intent = new Intent();
+                                            if (request_type == Constants.PIN_SET){
+                                                SharedPreferences.Editor  editor = preferences.edit();
+                                                editor.putInt("info", 1);
+                                                editor.commit();
+                                                intent.setClass(ConfirmNewPin.this, SelectAccount.class);
+                                            }else{
+                                                intent.setClass(ConfirmNewPin.this, ForgotPinVerification.class);
+                                            }
                                             startActivity(intent);
                                             finish();
                                         }else{

@@ -126,17 +126,23 @@ public class WebSocketService extends Service {
                 //收到服务器端传过来的消息text
                 Log.e(TAG, "接收消息的回调--------------"+text);
 
-
+                JSONObject testJson = new JSONObject();
+                testJson.put("fid", "123456");
+                testJson.put("amount", "10.00");
+                String test = testJson.toJSONString();
                 try {
+
+//                    Log.i(TAG, test);
                     //这个是解析你的回调数据
                     JSONObject jsonObject = JSON.parseObject(text);
-                    String tid;
-                    tid = jsonObject.getString("tid");
-                    Log.i(TAG, text);
-                    if (tid == null){
+                    String fid;
+                    fid = jsonObject.getString("fid");
+//                    Log.i(TAG, test);
+                    if (fid == null){
                         return;
                     }
 
+                    Log.i(TAG, "CALLBACK");
                     if (callback != null){
                         callback.onDataChange(jsonObject.toJSONString());
                     }

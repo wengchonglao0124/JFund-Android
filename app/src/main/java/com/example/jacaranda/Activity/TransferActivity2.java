@@ -29,6 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jacaranda.Constants;
 import com.example.jacaranda.MyView.MyInputFilter;
 import com.example.jacaranda.R;
 
@@ -324,6 +325,8 @@ public class TransferActivity2 extends AppCompatActivity {
                                                             intent.putExtra("fid", fid);
                                                             intent.putExtra("amount", amount);
                                                             intent.putExtra("username", tv_name.getText().toString());
+                                                            intent.putExtra("path", Constants.PATH_TRANSFER_PIN);
+                                                            intent.putExtra("type", Constants.TRANSFER);
                                                             startActivity(intent);
                                                             finish();
                                                         } catch (JSONException e) {

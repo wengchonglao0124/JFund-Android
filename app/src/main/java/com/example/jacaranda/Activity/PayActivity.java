@@ -26,15 +26,20 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.example.jacaranda.Constants;
 import com.example.jacaranda.HintPage.SuccessfullyPay;
 import com.example.jacaranda.HintPage.SuccessfullyTransferActivity;
 import com.example.jacaranda.R;
 import com.example.jacaranda.Service.PayHandler;
 import com.example.jacaranda.Service.WebSocketService;
 import com.example.jacaranda.Util.QRcodeUtil;
+import com.example.jacaranda.Util.profileUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class PayActivity extends AppCompatActivity implements ServiceConnection {
     private WebSocketService.MyBinder myBinder = null;
@@ -48,16 +53,38 @@ public class PayActivity extends AppCompatActivity implements ServiceConnection 
         preferences = getSharedPreferences("config", Context.MODE_PRIVATE);
 
         setContentView(R.layout.activity_pay);
+        initUserDetails();
         initClick();
         initQRcode();
     }
 
+    String username, uid;
     private void initUserDetails(){
+        uid = preferences.getString("userID", "0000 0000 0000 0000");
+        username = preferences.getString("username", "UNKNOWN");
+        TextView tv_username, tv_uid;
+        tv_uid = findViewById(R.id.id_tv_pay_uid);
+        tv_username = findViewById(R.id.id_tv_pay_username);
 
+        tv_username.setText(username);
+        tv_uid.setText(profileUtil.uidToUidString(uid));
     }
 
     private void initQRcode(){
-        code.setImageBitmap(QRcodeUtil.createQRCodeBitmap("hello!",
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        Date time = new Date();
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("uid", uid);
+
+            jsonObject.put("time", df.format(time));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        code.setImageBitmap(QRcodeUtil.createQRCodeBitmap(jsonObject.toString(),
                 400,
                 400,
                 "UTF-8",
@@ -115,7 +142,10 @@ public class PayActivity extends AppCompatActivity implements ServiceConnection 
             public void onClick(View view) {
                 if(popupWindow!=null){
                     popupWindow.dismiss();
-                    Intent intent = new Intent(PayActivity.this, SuccessfullyPay.class);
+                    Intent intent = new Intent(PayActivity.this, CheckPin.class);
+                    intent.putExtra("path", Constants.PATH_PAY_PIN);
+                    intent.putExtra("type", Constants.PAY);
+                    intent.putExtra("nextPage", SuccessfullyPay.class);
                     startActivity(intent);
                 }
             }
