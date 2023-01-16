@@ -157,6 +157,10 @@ public class ActivitiesAdapter extends ArrayAdapter<RecentActivity> {
     private int getNameColor(String name, String color){
         letter = view.findViewById(R.id.id_activity_letter);
         letter.setText(name.substring(0,1).toUpperCase());
+        if (color == null){
+            letter.setText("");
+            return R.drawable.payoneer;
+        }
         switch (color){
             case "#cdb4db":
                 return R.drawable.circle_case1;
