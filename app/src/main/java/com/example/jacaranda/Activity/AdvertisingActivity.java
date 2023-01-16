@@ -165,7 +165,19 @@ public class AdvertisingActivity extends AppCompatActivity {
                                             }
 
                                             Intent intent = new Intent();
-                                            intent.setClass(AdvertisingActivity.this, SelectAccount.class);
+
+                                            int info = preferences.getInt("info", -1);
+                                            switch (info){
+                                                case 0:
+                                                    intent.setClass(AdvertisingActivity.this, SetUpPinActivity.class);
+                                                    break;
+                                                case 1:
+                                                    intent.setClass(AdvertisingActivity.this, SelectAccount.class);
+                                                    break;
+                                                default:
+                                                    intent.setClass(AdvertisingActivity.this, SignInActivity.class);
+                                            }
+
                                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
                                             startActivity(intent);
                                         }else{

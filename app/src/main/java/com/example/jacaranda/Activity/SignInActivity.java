@@ -271,15 +271,17 @@ public class SignInActivity extends AppCompatActivity {
                                             showToast("Login succeeded!");
 
                                             rememberUser(user_json);
-
+                                            String username, accessToken, refreshToken, userID, profileColor;
+                                            int info;
                                             try {
-                                                String username, accessToken, refreshToken, userID, profileColor;
+
                                                 final JSONObject responseBody = new JSONObject(data);
                                                 accessToken = responseBody.optString("AccessToken");
                                                 refreshToken = responseBody.optString("RefreshToken");
                                                 userID = responseBody.optString("UserID");
                                                 username = responseBody.optString("UserName");
                                                 profileColor = responseBody.optString("image");
+                                                info = Integer.parseInt(responseBody.optString("info"));
 
                                                 SharedPreferences.Editor  editor = preferences.edit();
                                                 editor.putString("AccessToken", accessToken);
@@ -287,14 +289,28 @@ public class SignInActivity extends AppCompatActivity {
                                                 editor.putString("userID", userID);
                                                 editor.putString("username", username);
                                                 editor.putString("profileColor", profileColor);
+                                                editor.putInt("info", info);
                                                 editor.apply();
 //                                                editor.commit();
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
 
+
                                             Intent intent = new Intent();
-                                            intent.setClass(SignInActivity.this, SelectAccount.class);
+
+                                            info = preferences.getInt("info", -1);
+                                            switch (info){
+                                                case 0:
+                                                    intent.setClass(SignInActivity.this, SetUpPinActivity.class);
+                                                    break;
+                                                case 1:
+                                                    intent.setClass(SignInActivity.this, SelectAccount.class);
+                                                    break;
+                                                default:
+                                                    return;
+                                            }
+
                                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
                                             startActivity(intent);
                                         }else{
