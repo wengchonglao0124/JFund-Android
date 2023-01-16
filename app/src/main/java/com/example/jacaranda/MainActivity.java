@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ViewPagerAdapter PagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),
                 getLifecycle(), fragments);
         ViewPager.setAdapter(PagerAdapter);
-        ViewPager.setSaveEnabled(false);
+//        ViewPager.setSaveEnabled(false);
         ViewPager.setUserInputEnabled(false);
         ViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override

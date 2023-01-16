@@ -113,8 +113,7 @@ public class HomeFragment extends Fragment {
         preferences = requireActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
         app = (JacarandaApplication) getActivity().getApplication();
 
-        lastUpdateTime = new Date();
-        getActivitiesBefore(df.format(lastUpdateTime));
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -138,29 +137,26 @@ public class HomeFragment extends Fragment {
         event.setVisibility(View.GONE);
     }
 
-    private LinearLayout recentActivity;
-    private LayoutInflater inflater;
-    private View view;
-    private NoScrollListView listView;
-    private RecentActivityAdapter activityAdapter;
+    LinearLayout recentActivity;
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void initRecentActivity() {
 //        initRecentActivityData();
+
         recentActivity = RootView.findViewById(R.id.id_ll_recentActivity);
-        inflater = getLayoutInflater();
+
+        recentActivity.removeAllViews();
+        LayoutInflater inflater = getLayoutInflater();
         if (activityList.size() == 0){
-            currentView = R.layout.home_activitiy_part_case1;
-            view = inflater.inflate(R.layout.home_activitiy_part_case1, null);
+            View view = inflater.inflate(R.layout.home_activitiy_part_case1, null);
             recentActivity.addView(view);
             view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
         }else if (activityList.size() > 0 && activityList.size() <= 3){
-            currentView = R.layout.home_activity_part_case2;
-            view = inflater.inflate(R.layout.home_activity_part_case2, null);
-            recentActivity.addView(view);
-            listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
-            activityAdapter = new RecentActivityAdapter(this.getActivity(),
+            View listview = inflater.inflate(R.layout.home_activity_part_case2, null);
+            recentActivity.addView(listview);
+            NoScrollListView listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
+            RecentActivityAdapter adapter = new RecentActivityAdapter(this.getActivity(),
                     R.layout.home_activity_part_listview, activityList);
-            listView.setAdapter(activityAdapter);
+            listView.setAdapter(adapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -181,14 +177,16 @@ public class HomeFragment extends Fragment {
                 }
             });
         }else if(activityList.size() > 3){
-            activityList = activityList.subList(0,3);
-            currentView = R.layout.home_activity_part_case3;
-            view = inflater.inflate(R.layout.home_activity_part_case3,null);
-            recentActivity.addView(view);
-            listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
-            activityAdapter = new RecentActivityAdapter(this.getActivity(),
-                    R.layout.home_activity_part_listview, activityList);
-            listView.setAdapter(activityAdapter);
+            List<RecentActivity> currentList = new ArrayList<>();
+            currentList.add(activityList.get(0));
+            currentList.add(activityList.get(1));
+            currentList.add(activityList.get(2));
+            View listview = inflater.inflate(R.layout.home_activity_part_case3,null);
+            recentActivity.addView(listview);
+            NoScrollListView listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
+            RecentActivityAdapter adapter = new RecentActivityAdapter(this.getActivity(),
+                    R.layout.home_activity_part_listview, currentList);
+            listView.setAdapter(adapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
@@ -491,11 +489,12 @@ public class HomeFragment extends Fragment {
                                         if (!activities.isEmpty()){
                                             try {
                                                 activityList = transferToRecentActivity(activities);
-                                                getActivity().runOnUiThread(() -> initActivityAndMore());
                                             } catch (ParseException e) {
                                                 e.printStackTrace();
                                             }
                                         }
+
+                                        getActivity().runOnUiThread(() -> initActivityAndMore());
 
                                     }else{
                                         showToast(message);
@@ -609,7 +608,7 @@ public class HomeFragment extends Fragment {
         }else{
             activityList = recentActivities;
         }
-        updateRecentActivityUI(oldLen);
+//        updateRecentActivityUI(oldLen);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -652,103 +651,11 @@ public class HomeFragment extends Fragment {
             recentActivities.add(recentActivity);
         }
         activities.clear();
+
+        Log.i(TAG, recentActivities.toString());
         return recentActivities;
     }
 
-    private void updateRecentActivityUI(int oldView){
-        Log.i(TAG, "updateRecentActivityUI");
-        int currentLen = activityList.size();
-        Log.i("updateRecentActivityUI", String.valueOf(oldView));
-        Log.i("updateRecentActivityUI", String.valueOf(currentView));
-        Log.i("updateRecentActivityUI", activityList.toString());
-
-        if (oldView == R.layout.home_activitiy_part_case1){
-            Log.i("updateRecentActivityUI", "case1");
-
-
-            recentActivity.removeView(view);
-            if (currentLen > 3){
-                activityList = activityList.subList(0,3);
-                this.currentView = R.layout.home_activity_part_case3;
-                view = inflater.inflate(R.layout.home_activity_part_case3, null);
-                activityAdapter = new RecentActivityAdapter(this.getActivity(),
-                        R.layout.home_activity_part_listview, activityList);
-            }else{
-                this.currentView = R.layout.home_activity_part_case2;
-                view = inflater.inflate(R.layout.home_activity_part_case2, null);
-                activityAdapter = new RecentActivityAdapter(this.getActivity(),
-                        R.layout.home_activity_part_listview, activityList);
-            }
-
-            recentActivity.addView(view);
-            listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
-            listView.setAdapter(activityAdapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @RequiresApi(api = Build.VERSION_CODES.N)
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
-                    RecentActivity activity = activityList.get(position);
-                    intent.putExtra("image", activity.getImageName());
-                    intent.putExtra("name", activity.getName());
-                    intent.putExtra("amount", activity.getBalance());
-                    intent.putExtra("extra", activity.getExtra());
-                    try {
-                        intent.putExtra("time", activity.getDetailTime());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    intent.putExtra("receipt", activity.getReceipt());
-                    startActivity(intent);
-                }
-            });
-        }else if (oldView == R.layout.home_activity_part_case3){
-            Log.i("updateRecentActivityUI", "case3");
-
-            if (currentLen > 3){
-                activityAdapter.remove(activityList.get(3));
-                activityList = activityList.subList(0,3);
-                activityAdapter.notifyDataSetChanged();
-            }
-        }else{
-            Log.i("updateRecentActivityUI", "case2");
-
-            if (currentLen > 3){
-                activityAdapter.remove(activityList.get(3));
-                activityList = activityList.subList(0,3);
-                this.currentView = R.layout.home_activity_part_case3;
-                recentActivity.removeView(view);
-                view = inflater.inflate(R.layout.home_activity_part_case3, null);
-                activityAdapter = new RecentActivityAdapter(this.getActivity(),
-                        R.layout.home_activity_part_listview, activityList);
-                recentActivity.addView(view);
-
-                listView = (NoScrollListView) RootView.findViewById(R.id.id_listView);
-                listView.setAdapter(activityAdapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.N)
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
-                        RecentActivity activity = activityList.get(position);
-                        intent.putExtra("image", activity.getImageName());
-                        intent.putExtra("name", activity.getName());
-                        intent.putExtra("amount", activity.getBalance());
-                        intent.putExtra("extra", activity.getExtra());
-                        try {
-                            intent.putExtra("time", activity.getDetailTime());
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        intent.putExtra("receipt", activity.getReceipt());
-                        startActivity(intent);
-                    }
-                });
-            }else{
-                activityAdapter.notifyDataSetChanged();
-            }
-        }
-    }
 
     private void showAlert(String title, @Nullable String message) {
         getActivity().runOnUiThread(() -> {
@@ -769,13 +676,17 @@ public class HomeFragment extends Fragment {
     private void updateUI(){
         getBalance();
 
-        if (recentViewCreated){
-            if (activityList.isEmpty()){
-                getActivitiesAfter(df.format(lastUpdateTime));
-            }else{
-                getActivitiesAfter(activityList.get(0).getDateTime());
-            }
-        }
+//        if (recentViewCreated){
+//            if (activityList.isEmpty()){
+//                getActivitiesAfter(df.format(lastUpdateTime));
+//            }else{
+//                getActivitiesAfter(activityList.get(0).getDateTime());
+//            }
+//        }
+
+        String time = df.format(new Date());
+        Log.i(TAG, time);
+        getActivitiesBefore(time);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
