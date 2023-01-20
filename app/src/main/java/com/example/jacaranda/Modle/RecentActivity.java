@@ -202,9 +202,9 @@ public class RecentActivity {
     public void setAmount(double amount) {
         this.amount = amount;
         if (this.type.equals("topUp")){
-            Double extraAmount = Math.floor(amount/10);
-            if (!(extraAmount < 10)){
-                this.extra = "+" + extraAmount;
+            Double extraAmount = Math.floor(amount/100);
+            if (!(extraAmount < 1)){
+                this.extra = "+" + extraAmount*10;
             }
         }
     }

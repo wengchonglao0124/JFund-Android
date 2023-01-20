@@ -2,6 +2,8 @@ package com.example.jacaranda.Activity;
 
 import static com.example.jacaranda.Util.JsonToStringUtil.parseResponse;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.jacaranda.Constants;
 import com.example.jacaranda.MainActivity;
 import com.example.jacaranda.R;
 import com.example.jacaranda.SelectAccount;
@@ -93,12 +96,23 @@ public class AdvertisingActivity extends AppCompatActivity {
     }
 
     private void toSignin(){
-        finish();
         Intent intent = new Intent();
         intent.setClass(AdvertisingActivity.this, SignInActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        finish();
     }
+
+    ActivityResultLauncher requestBalanceLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        Log.d("AdvertisingActivity",result.getData().getStringExtra("data_return"));
+        String balance = result.getData().getStringExtra("balance");
+        Intent intent = new Intent();
+        intent.setClass(AdvertisingActivity.this, SelectAccount.class);
+        intent.putExtra("balance", balance);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    });
+
 
     private void validateToken(String token){
         new Thread(){
@@ -164,22 +178,28 @@ public class AdvertisingActivity extends AppCompatActivity {
                                                 e.printStackTrace();
                                             }
 
-                                            Intent intent = new Intent();
 
                                             int info = preferences.getInt("info", -1);
                                             switch (info){
                                                 case 0:
+                                                    Intent intent = new Intent();
                                                     intent.setClass(AdvertisingActivity.this, SetUpPinActivity.class);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    startActivity(intent);
                                                     break;
                                                 case 1:
-                                                    intent.setClass(AdvertisingActivity.this, SelectAccount.class);
+                                                    Intent loadIntent =new Intent(AdvertisingActivity.this,LoadingActivity.class);
+                                                    loadIntent.putExtra("request", Constants.GET_BALANCE);
+                                                    requestBalanceLauncher.launch(loadIntent);
                                                     break;
                                                 default:
-                                                    intent.setClass(AdvertisingActivity.this, SignInActivity.class);
+                                                    Intent intent2 = new Intent();
+                                                    intent2.setClass(AdvertisingActivity.this, SignInActivity.class);
+                                                    intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    startActivity(intent2);
                                             }
 
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            startActivity(intent);
+
                                         }else{
 //                                            showToast("Error! code:" + code);
                                             toSignin();

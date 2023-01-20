@@ -5,13 +5,17 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.jacaranda.Activity.SignInActivity;
 
 public class SelectAccount extends AppCompatActivity {
+    private static final String TAG = "SelectAccount";
     ConstraintLayout account1,account2;
 
+    TextView tv_DebitBalance, tv_JacBalance;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,5 +36,10 @@ public class SelectAccount extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        tv_JacBalance = (TextView) findViewById(R.id.id_tv_selectAc_JacBalance);
+        String balance = getIntent().getStringExtra("balance");
+        Log.i(TAG, balance);
+        tv_JacBalance.setText(balance);
     }
 }

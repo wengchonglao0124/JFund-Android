@@ -18,6 +18,9 @@
         android:theme="@style/Theme.Jacaranda"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.LoadingActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.SetUpPinActivity"
             android:exported="false" />
         <activity
