@@ -1,5 +1,7 @@
 package com.example.jacaranda;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -9,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.jacaranda.Activity.AdvertisingActivity;
+import com.example.jacaranda.Activity.LoadingActivity;
 import com.example.jacaranda.Activity.SignInActivity;
 
 public class SelectAccount extends AppCompatActivity {
@@ -41,5 +45,20 @@ public class SelectAccount extends AppCompatActivity {
         String balance = getIntent().getStringExtra("balance");
         Log.i(TAG, balance);
         tv_JacBalance.setText(balance);
+
+//        Intent intent = new Intent(this, LoadingActivity.class);
+//        intent.putExtra("request", Constants.HOMEFRAG);
+//        mainActLauncher.launch(intent);
     }
+
+    ActivityResultLauncher mainActLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        Log.d("SelectAccount",result.getData().getStringExtra("data_return"));
+        String balance = result.getData().getStringExtra("balance");
+        Intent intent = new Intent();
+        intent.setClass(SelectAccount.this, MainActivity.class);
+        intent.putExtra("balance", balance);
+        intent.putExtra("activities", balance);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    });
 }

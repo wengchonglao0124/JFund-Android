@@ -7,6 +7,8 @@ import android.graphics.RenderEffect;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -27,10 +29,12 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.example.jacaranda.Activity.ActivitiesDetail;
+import com.example.jacaranda.Activity.LoadingActivity;
 import com.example.jacaranda.Activity.RestaurantDetail;
 import com.example.jacaranda.Activity.TopUpBalance;
 import com.example.jacaranda.Adapter.RecentActivityAdapter;
 import com.example.jacaranda.Adapter.FragmentPagerAdapter;
+import com.example.jacaranda.Constants;
 import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.Modle.Activity;
 import com.example.jacaranda.Modle.RecentActivity;
@@ -71,6 +75,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+@RequiresApi(api = Build.VERSION_CODES.N)
 public class HomeFragment extends Fragment {
     View RootView;
     List<RecentActivity> activityList = new ArrayList<>();
@@ -89,6 +94,8 @@ public class HomeFragment extends Fragment {
     private int currentView;
 
     private boolean recentViewCreated = false;
+
+    private boolean load_flag = false;
 
 
     public HomeFragment() {
@@ -120,16 +127,31 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView");
         if(RootView == null){
             RootView = inflater.inflate(R.layout.fragment_home, container, false);
             initEvent();
 //            initRecentActivity();
 //            initBusinessPartner();
 //            initClick();
-            updateUserID(preferences.getString("userID", "0000000000000000"));
+
         }
         return RootView;
     }
+
+    ActivityResultLauncher homeFragLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        Log.i(TAG, "ActivityResultLauncher");
+        Log.d("HomeFragment",result.getData().getStringExtra("data_return"));
+
+        String balance = result.getData().getStringExtra("balance");
+        Log.i(TAG, balance);
+        activityList = (List<RecentActivity>) result.getData().getSerializableExtra("activities");
+        Log.i(TAG, activityList.toString());
+
+        initActivityAndMore();
+        updateBalance(balance);
+        updateUserID(preferences.getString("userID", "0000000000000000"));
+    });
 
     View event;
     private void initEvent() {
@@ -138,7 +160,6 @@ public class HomeFragment extends Fragment {
     }
 
     LinearLayout recentActivity;
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void initRecentActivity() {
 //        initRecentActivityData();
 
@@ -189,7 +210,6 @@ public class HomeFragment extends Fragment {
             listView.setAdapter(adapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(getActivity(), ActivitiesDetail.class);
@@ -211,7 +231,6 @@ public class HomeFragment extends Fragment {
         recentViewCreated = true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void initRecentActivityData() {
         String strByJson = JsonToStringUtil.getStringByJson(getActivity(), R.raw.activities);
         JsonParser parser = new JsonParser();
@@ -405,15 +424,15 @@ public class HomeFragment extends Fragment {
 
     private void updateUserID(String userID){
         TextView userId = RootView.findViewById(R.id.id_balance_userid);
-        String userIDString = "";
+        StringBuilder userIDString = new StringBuilder();
         char[] characters = userID.toCharArray();
         for (int i=0; i<userID.length(); i++){
             if ((i%4) == 0){
-                userIDString += " ";
+                userIDString.append(" ");
             }
-            userIDString += characters[i];
+            userIDString.append(characters[i]);
         }
-        userId.setText(userIDString);
+        userId.setText(userIDString.toString());
     }
 
     private void updateBalance(String balance){
@@ -508,7 +527,6 @@ public class HomeFragment extends Fragment {
         }.start();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void initActivityAndMore(){
         initRecentActivity();
         initBusinessPartner();
@@ -550,7 +568,6 @@ public class HomeFragment extends Fragment {
                                 showAlert("Failed to load data", "Error: " + e.toString());
                             }
 
-                            @RequiresApi(api = Build.VERSION_CODES.N)
                             @Override
                             public void onResponse(
                                     @NonNull Call call,
@@ -598,7 +615,6 @@ public class HomeFragment extends Fragment {
         }.start();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void updateActivityList(List<Activity> activities) throws ParseException {
         int oldLen = activityList.size();
         List<RecentActivity> recentActivities = transferToRecentActivity(activities);
@@ -611,7 +627,6 @@ public class HomeFragment extends Fragment {
 //        updateRecentActivityUI(oldLen);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private List<RecentActivity> transferToRecentActivity(List<Activity> activities) throws ParseException {
 
         List<RecentActivity> recentActivities = new ArrayList<>();
@@ -672,7 +687,6 @@ public class HomeFragment extends Fragment {
         getActivity().runOnUiThread(() -> Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void updateUI(){
         getBalance();
 
@@ -697,15 +711,24 @@ public class HomeFragment extends Fragment {
 //        initActivitiesData();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onResume() {
         super.onResume();
-        updateUI();
+//        updateUI();
+
+        if (load_flag == false){
+            load_flag = true;
+            Intent intent = new Intent(getContext(), LoadingActivity.class);
+            intent.putExtra("request", Constants.HOMEFRAG);
+            homeFragLauncher.launch(intent);
+        }else{
+            load_flag = false;
+        }
+
+
     }
 
     private int oldLen = 0;
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onStop() {
         Log.i(TAG,"onStop");

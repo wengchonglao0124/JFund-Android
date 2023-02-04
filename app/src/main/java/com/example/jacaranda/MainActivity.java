@@ -1,9 +1,12 @@
 package com.example.jacaranda;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initBottomNavigation();
     }
 
-
     private void initViewPage() {
         ViewPager = findViewById(R.id.id_ViewPager);
         ArrayList<Fragment> fragments = new ArrayList<>();
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ViewPagerAdapter PagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),
                 getLifecycle(), fragments);
         ViewPager.setAdapter(PagerAdapter);
-//        ViewPager.setSaveEnabled(false);
+        ViewPager.setSaveEnabled(false);
         ViewPager.setUserInputEnabled(false);
         ViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 SwitchPager(position);
+
                 Log.i(TAG, String.valueOf(position));
             }
         });

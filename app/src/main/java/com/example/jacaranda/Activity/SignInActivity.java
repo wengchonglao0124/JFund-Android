@@ -2,6 +2,8 @@ package com.example.jacaranda.Activity;
 
 import static com.example.jacaranda.Util.JsonToStringUtil.parseResponse;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -25,6 +27,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jacaranda.Constants;
 import com.example.jacaranda.Database.LoginDBHelper;
 import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.Modle.UserCredential;
@@ -220,6 +223,16 @@ public class SignInActivity extends AppCompatActivity {
         return userInfo;
     }
 
+    ActivityResultLauncher requestBalanceLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        Log.d("SignInActivity",result.getData().getStringExtra("data_return"));
+        String balance = result.getData().getStringExtra("balance");
+        Intent intent = new Intent();
+        intent.setClass(SignInActivity.this, SelectAccount.class);
+        intent.putExtra("balance", balance);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    });
+
     private void authenticateEmailPassword(JSONObject user_json){
         new Thread(){
             @Override
@@ -297,22 +310,26 @@ public class SignInActivity extends AppCompatActivity {
                                             }
 
 
-                                            Intent intent = new Intent();
+
 
                                             info = preferences.getInt("info", -1);
                                             switch (info){
                                                 case 0:
+                                                    Intent intent = new Intent();
                                                     intent.setClass(SignInActivity.this, SetUpPinActivity.class);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    startActivity(intent);
                                                     break;
                                                 case 1:
-                                                    intent.setClass(SignInActivity.this, SelectAccount.class);
+                                                    Intent loadIntent =new Intent(SignInActivity.this,LoadingActivity.class);
+                                                    loadIntent.putExtra("request", Constants.GET_BALANCE);
+                                                    requestBalanceLauncher.launch(loadIntent);
                                                     break;
                                                 default:
                                                     return;
                                             }
 
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            startActivity(intent);
+
                                         }else{
                                             showToast(message);
                                         }

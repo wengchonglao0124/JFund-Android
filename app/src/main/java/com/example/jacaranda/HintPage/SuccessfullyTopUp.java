@@ -27,10 +27,11 @@ public class SuccessfullyTopUp extends AppCompatActivity {
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(SuccessfullyTopUp.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+//                Intent intent = new Intent();
+//                intent.setClass(SuccessfullyTopUp.this, MainActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_NEW_TASK);
+//                startActivity(intent);
+                finish();
             }
         });
     }

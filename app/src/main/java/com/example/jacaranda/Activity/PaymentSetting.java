@@ -1,13 +1,18 @@
 package com.example.jacaranda.Activity;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,24 +20,66 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.PopupWindow;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.jacaranda.JacarandaApplication;
 import com.example.jacaranda.MyView.PwdEditText;
 import com.example.jacaranda.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 public class PaymentSetting extends AppCompatActivity {
+    private final String TAG = "PaymentSetting";
+    private static final String BACKEND_URL = "https://xp.lycyy.cc";
+    private JacarandaApplication app;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_setting);
+
+        preferences = getSharedPreferences("config", Context.MODE_PRIVATE);
+        app = (JacarandaApplication) getApplication();
+
         initAll();
+    }
+
+    Switch s_pinfree;
+    private void initPinFreeSwtich(){
+        s_pinfree = (Switch) findViewById(R.id.id_s_pinfree_switch);
+        s_pinfree.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    setPinFree("50");
+                }else{
+                    setPinFree("0");
+                }
+            }
+        });
     }
 
     private void initAll() {
         initBack();
         initPinFree();
+        initPinFreeSwtich();
     }
 
     Button back;
@@ -203,6 +250,95 @@ public class PaymentSetting extends AppCompatActivity {
                 bgAlpha(1.0f);
             }
         });
+    }
+
+    private void setPinFree(String amount){
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("Amount", amount);
+            Log.i(TAG, jsonObject.toString());
+        }catch (Exception e){
+            Log.e(TAG, e.toString());
+        }
+
+
+        //setup RequestBody
+        final RequestBody requestBody = RequestBody.create(
+                jsonObject.toString(),
+                MediaType.get("application/json; charset=utf-8")
+        );
+
+        Request request = new Request.Builder()
+                .url(BACKEND_URL + "/setPin_free")
+                .post(requestBody)
+                .addHeader("token", preferences.getString("AccessToken", null))
+                .build();
+
+
+        new OkHttpClient()
+                .newCall(request)
+                .enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    }
+
+                    @Override
+                    public void onResponse(
+                            @NonNull Call call,
+                            @NonNull Response response
+                    ) throws IOException {
+                        if (!response.isSuccessful()) {
+                        } else {
+                            final JSONObject responseJson = parseResponse(response.body());
+                            Log.i(TAG, responseJson.toString());
+
+                            String code, message, data;
+                            code = responseJson.optString("code");
+                            message = responseJson.optString("msg");
+                            data = responseJson.optString("data");
+                            data = data.replace("\\\"", "'");
+
+                            Log.i(TAG, data);
+
+
+
+                            if (code.equals("200")){
+
+                            }else{
+                                Log.i(TAG, message);
+
+                            }
+
+                        }
+                    }
+                });
+    }
+
+    private JSONObject parseResponse(ResponseBody responseBody) {
+        if (responseBody != null) {
+            try {
+                return new JSONObject(responseBody.string());
+            } catch (IOException | JSONException e) {
+                Log.e(TAG, "Error parsing response", e);
+            }
+        }
+
+        return new JSONObject();
+    }
+
+    private void showAlert(String title, @Nullable String message) {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("Ok", null)
+                .create();
+        dialog.show();
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
 }

@@ -7,12 +7,13 @@ import androidx.annotation.RequiresApi;
 
 import com.example.jacaranda.R;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class RecentActivity {
+public class RecentActivity implements Serializable {
     private String imageName;
     private String name;
     private String dateString;

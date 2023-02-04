@@ -102,6 +102,11 @@ public class ActivitiesDetail extends AppCompatActivity {
     private int getNameColor(String name, String color){
         letter = (TextView) findViewById(R.id.id_activity_detail_letter);
         letter.setText(name.substring(0,1).toUpperCase());
+
+        if (color == null){
+            return R.drawable.payoneer;
+        }
+
         switch (color){
             case "#cdb4db":
                 return R.drawable.circle_case1;

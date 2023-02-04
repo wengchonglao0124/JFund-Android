@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -313,6 +314,7 @@ public class TopUpBalance extends AppCompatActivity {
                     intent.setClass(TopUpBalance.this, SuccessfullyTopUp.class);
                     intent.putExtra("amount", amount.toString());
                     startActivity(intent);
+                    finish();
                 }
             };
             timer.schedule(timerTask,1000);
@@ -331,6 +333,12 @@ public class TopUpBalance extends AppCompatActivity {
                     .setTitle(title)
                     .setMessage(message)
                     .setPositiveButton("Ok", null)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();;
+                        }
+                    })
                     .create();
             dialog.show();
         });

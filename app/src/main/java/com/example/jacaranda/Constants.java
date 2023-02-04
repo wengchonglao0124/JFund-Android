@@ -3,6 +3,7 @@ package com.example.jacaranda;
 public class Constants {
 
     public static final int GET_BALANCE = 100;
+    public static final int HOMEFRAG = 101;
 
     public static final int PIN = 800;
     public static final int PIN_FORGOT = 801;

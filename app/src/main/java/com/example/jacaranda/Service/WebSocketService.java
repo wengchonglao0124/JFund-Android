@@ -88,7 +88,7 @@ public class WebSocketService extends Service {
     /**
      * 心跳检测时间
      */
-    private static final long HEART_BEAT_RATE = 10 * 1000;//每隔10秒进行一次对长连接的心跳检测
+    private static final long HEART_BEAT_RATE = 60 * 1000;//每隔60秒进行一次对长连接的心跳检测
 
 
     private WebSocket mWebSocket;
@@ -135,10 +135,10 @@ public class WebSocketService extends Service {
 //                    Log.i(TAG, test);
                     //这个是解析你的回调数据
                     JSONObject jsonObject = JSON.parseObject(text);
-                    String fid;
-                    fid = jsonObject.getString("fid");
+                    String code;
+                    code = jsonObject.getString("code");
 //                    Log.i(TAG, test);
-                    if (fid == null){
+                    if (code == null){
                         return;
                     }
 
