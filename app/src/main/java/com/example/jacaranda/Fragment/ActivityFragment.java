@@ -670,12 +670,16 @@ public class ActivityFragment extends Fragment {
                                         Log.i(TAG, activities.toString());
                                         if (!activities.isEmpty()){
                                             try {
-                                                activityList.addAll(0, transferToRecentActivity(activities));
+                                                Log.i(TAG, transferToRecentActivity(activities).toString());
+                                                activityList.addAll(1, transferToRecentActivity(activities));
+
+                                                Log.i(TAG, activityList.toString());
+                                                getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
                                             } catch (ParseException e) {
                                                 e.printStackTrace();
                                             }
                                         }
-                                        getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
+
 
                                     }else{
                                         showToast(message);
@@ -765,6 +769,7 @@ public class ActivityFragment extends Fragment {
         if (activityList.isEmpty()){
             getActivitiesBefore(df.format(new Date()));
         }else{
+            Log.i(TAG, activityList.get(0).getDateTime());
             getActivitiesAfter(activityList.get(0).getDateTime());
         }
     }
